@@ -1,0 +1,10 @@
+{
+  "name": "KASIR BENGKEL",
+  "description": "Aplikasi kasir bengkel motor dan mobil offline-first dengan input plat nomor kendaraan, nama mekanik, manajemen sparepart & jasa servis, buku kas operasional, dan dashboard laba bersih otomatis.",
+  "requestFramePermissions": [
+    "camera"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
