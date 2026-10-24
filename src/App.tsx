@@ -62,13 +62,13 @@ export default function App() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [darkMode, setDarkMode] = useState<boolean>(() => {
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('pos_dark_mode');
+      const saved = localStorage.getItem('bengkel_q_rwb_dark_mode');
       if (saved !== null) {
         return saved === 'true';
       }
-      return true; // Default to Option 2: Minimalist High Contrast (Dark)
+      return false; // Default to Red, White & Blue Workshop Theme
     }
-    return true;
+    return false;
   });
 
   // Modals state
@@ -248,10 +248,10 @@ export default function App() {
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add('dark');
-      localStorage.setItem('pos_dark_mode', 'true');
+      localStorage.setItem('bengkel_q_rwb_dark_mode', 'true');
     } else {
       document.documentElement.classList.remove('dark');
-      localStorage.setItem('pos_dark_mode', 'false');
+      localStorage.setItem('bengkel_q_rwb_dark_mode', 'false');
     }
   }, [darkMode]);
 
@@ -982,7 +982,7 @@ export default function App() {
       />
 
       {/* 2. Right Main Scrollable View Area */}
-      <div className="flex-1 h-screen overflow-y-auto flex flex-col bg-slate-50 dark:bg-[#0B1120]">
+      <div className="flex-1 h-screen overflow-y-auto flex flex-col bg-[#f8fafc] dark:bg-[#0b1530]">
         {/* Top Header Bar */}
         <TopHeader
           activeTab={activeTab}

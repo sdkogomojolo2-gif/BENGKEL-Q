@@ -136,7 +136,7 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
   return (
     <header
       id="top-header-bar"
-      className="h-16 px-3 sm:px-5 lg:px-6 border-b shrink-0 flex items-center justify-between transition-colors sticky top-0 z-20 backdrop-blur-md bg-white/95 dark:bg-zinc-950/95 border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100"
+      className="h-16 px-3 sm:px-5 lg:px-6 border-b-2 shrink-0 flex items-center justify-between transition-colors sticky top-0 z-20 backdrop-blur-md bg-white/95 dark:bg-zinc-950/95 border-blue-600 dark:border-blue-800 text-zinc-950 dark:text-white shadow-xs"
     >
       {/* Left: Mobile & Tablet Drawer Toggle + Breadcrumb & Title */}
       <div className="flex items-center gap-2 sm:gap-3 min-w-0">
@@ -144,7 +144,7 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
         <button
           type="button"
           onClick={onToggleMobileSidebar}
-          className="lg:hidden p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors cursor-pointer shrink-0"
+          className="lg:hidden p-2 rounded-xl border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-200 hover:bg-blue-50 dark:hover:bg-blue-900 transition-colors cursor-pointer shrink-0"
           title="Buka Navigasi"
         >
           <Menu className="w-5 h-5" />
@@ -155,18 +155,50 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
           <button
             type="button"
             onClick={() => setActiveTab('dashboard')}
-            className="hidden sm:flex items-center justify-center w-8 h-8 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-900 text-zinc-600 dark:text-zinc-300 transition-colors cursor-pointer shrink-0"
+            className="hidden sm:flex items-center justify-center w-8 h-8 rounded-xl border border-blue-200 dark:border-blue-800 hover:bg-blue-50 dark:hover:bg-blue-900 text-blue-700 dark:text-blue-200 transition-colors cursor-pointer shrink-0"
             title="Kembali ke Dashboard"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
         )}
 
-        {/* Title (Simpel & Bersih tanpa teks berulang) */}
-        <div className="min-w-0">
-          <h2 className="text-sm sm:text-base lg:text-lg font-black tracking-tight leading-tight text-zinc-950 dark:text-zinc-50 truncate">
+        {/* Title + Quick Navigation Dropdown (Hemat Tempat) */}
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div className="hidden sm:flex flex-col gap-0.5 shrink-0">
+            <span className="w-1.5 h-2.5 rounded-t-full bg-red-600" />
+            <span className="w-1.5 h-2.5 rounded-b-full bg-blue-600" />
+          </div>
+          <h2 className="hidden md:block text-sm sm:text-base lg:text-lg font-black tracking-tight leading-tight text-blue-950 dark:text-white truncate">
             {info.title}
           </h2>
+          <select
+            aria-label="Pilih Menu Navigasi Cepat"
+            value={activeTab === 'cashier' ? 'cashier-service' : activeTab}
+            onChange={(e) => setActiveTab(e.target.value as TabType)}
+            className="px-2.5 py-1.5 rounded-xl border border-blue-300 dark:border-blue-700 bg-blue-50/80 dark:bg-blue-900/70 text-blue-950 dark:text-white text-xs font-extrabold focus:outline-none focus:ring-2 focus:ring-red-600 cursor-pointer max-w-[185px] sm:max-w-[220px]"
+            title="Pindah Menu Cepat (Dropdown Navigasi)"
+          >
+            <optgroup label="Menu Utama & Kasir">
+              <option value="dashboard">📊 Ringkasan &amp; Laba</option>
+              <option value="cashier-service">🔧 Kasir Servis Kendaraan</option>
+              <option value="cashier-sparepart">🛍️ Kasir Sparepart &amp; Oli</option>
+            </optgroup>
+            <optgroup label="Gudang & Mekanik">
+              <option value="inventory">📦 Stok Sparepart &amp; Oli</option>
+              <option value="mechanics">👷 Komisi Mekanik</option>
+              <option value="service-records">🚗 Riwayat Servis Plat</option>
+            </optgroup>
+            <optgroup label="Kas & Piutang">
+              <option value="debts">📖 Piutang &amp; Tempo</option>
+              <option value="expenses">💸 Kas Keluar / Biaya</option>
+              <option value="branches">🏦 Saldo Kas &amp; Bank</option>
+            </optgroup>
+            <optgroup label="Laporan & Sistem">
+              <option value="reports">📈 Laporan Penjualan</option>
+              <option value="settings">⚙️ Pengaturan Bengkel</option>
+              <option value="guide">📘 Panduan Kasir</option>
+            </optgroup>
+          </select>
         </div>
       </div>
 
@@ -174,14 +206,14 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
       <div className="flex items-center gap-2 sm:gap-2.5">
         {/* Akun Tunggal Pemilik Bengkel Badge */}
         <div
-          className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-amber-500/40 bg-amber-500/10 text-amber-950 dark:text-amber-200 text-xs sm:text-sm font-black shadow-xs"
+          className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-blue-300 dark:border-blue-700 bg-blue-50 dark:bg-blue-900/60 text-blue-950 dark:text-white text-xs sm:text-sm font-black shadow-xs"
           title="Mode 1 Akun Tunggal: Pemilik Bengkel (Akses Penuh Seluruh Modul)"
         >
-          <span className="text-base">👑</span>
+          <img src="/icon.svg" alt="Ikon Bengkel" className="w-5 h-5 rounded-md shrink-0" />
           <span className="truncate max-w-[140px] sm:max-w-[200px]">
             {currentUser?.name || settings.ownerName || 'Pemilik Bengkel'}
           </span>
-          <span className="text-xs px-2 py-0.5 rounded-md bg-amber-500 text-zinc-950 font-black uppercase">
+          <span className="text-xs px-2 py-0.5 rounded-md bg-red-600 text-white font-black uppercase">
             Owner
           </span>
         </div>

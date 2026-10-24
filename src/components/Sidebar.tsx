@@ -92,18 +92,28 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const [editOwnerName, setEditOwnerName] = useState('');
   const [editOwnerPin, setEditOwnerPin] = useState('');
 
-  // Sub-menu accordion toggle state
-  const [isOperasionalOpen, setIsOperasionalOpen] = useState(true);
-  const [isLaporanOpen, setIsLaporanOpen] = useState(false);
-  const [isKasirSubmenuOpen, setIsKasirSubmenuOpen] = useState(true);
+  // Compact Dropdown group state (single open group at a time to save vertical space)
+  const [openDropdown, setOpenDropdown] = useState<'kasir' | 'bengkel' | 'keuangan' | 'sistem' | null>('kasir');
 
-  // Auto-expand section if its item is currently active
-  useEffect(() => {
-    if (['expenses', 'branches', 'inventory', 'debts'].includes(activeTab)) {
-      setIsOperasionalOpen(true);
+  const toggleDropdown = (group: 'kasir' | 'bengkel' | 'keuangan' | 'sistem') => {
+    if (isCollapsed) {
+      setIsCollapsed(false);
+      setOpenDropdown(group);
+      return;
     }
-    if (['reports', 'settings', 'guide'].includes(activeTab)) {
-      setIsLaporanOpen(true);
+    setOpenDropdown((prev) => (prev === group ? null : group));
+  };
+
+  // Auto-open the dropdown group matching the activeTab
+  useEffect(() => {
+    if (['cashier', 'cashier-service', 'cashier-sparepart'].includes(activeTab)) {
+      setOpenDropdown('kasir');
+    } else if (['inventory', 'mechanics', 'service-records'].includes(activeTab)) {
+      setOpenDropdown('bengkel');
+    } else if (['debts', 'expenses', 'branches'].includes(activeTab)) {
+      setOpenDropdown('keuangan');
+    } else if (['reports', 'settings', 'guide'].includes(activeTab)) {
+      setOpenDropdown('sistem');
     }
   }, [activeTab]);
 
@@ -113,12 +123,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
     setIsMobileDrawerOpen(false);
   };
 
-  const handleSelectGroup = (group: 'ALL' | 'DIGITAL' | 'FISIK') => {
-    if (onSelectCashierGroup) {
-      onSelectCashierGroup(group);
-    }
-    handleSelectTab('cashier');
-  };
+  const isKasirGroupActive = ['cashier', 'cashier-service', 'cashier-sparepart'].includes(activeTab);
+  const isBengkelGroupActive = ['inventory', 'mechanics', 'service-records'].includes(activeTab);
+  const isKeuanganGroupActive = ['debts', 'expenses', 'branches'].includes(activeTab);
+  const isSistemGroupActive = ['reports', 'settings', 'guide'].includes(activeTab);
 
   return (
     <>
@@ -137,21 +145,30 @@ export const Sidebar: React.FC<SidebarProps> = ({
           isCollapsed ? 'w-20' : 'w-64 lg:w-72'
         } ${
           isMobileDrawerOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
-        } bg-zinc-950 border-zinc-800 text-zinc-100`}
+        } bg-zinc-950 border-zinc-800 text-white`}
       >
+        {/* Red - White - Blue Automotive Racing Stripe */}
+        <div className="h-1.5 w-full flex shrink-0">
+          <div className="w-1/3 bg-red-600" />
+          <div className="w-1/3 bg-white" />
+          <div className="w-1/3 bg-blue-600" />
+        </div>
+
         {/* Top Header: Brand & Logo */}
-        <div className="p-4 border-b border-zinc-800 shrink-0 flex items-center justify-between">
+        <div className="p-3.5 border-b border-zinc-800 shrink-0 flex items-center justify-between bg-gradient-to-r from-blue-950 via-blue-900 to-red-900/40">
           <div className="flex items-center gap-3 overflow-hidden">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 font-black text-lg shadow-inner shrink-0">
-              🔧
-            </div>
+            <img
+              src="/icon.svg"
+              alt="BENGKEL-Q"
+              className="w-9 h-9 rounded-xl shadow-md border border-white/30 shrink-0 object-cover"
+            />
             {!isCollapsed && (
               <div className="truncate">
                 <h1 className="font-black text-sm tracking-tight text-white uppercase truncate">
-                  {settings.storeName || 'KASIR BENGKEL MOTOR / MOBIL'}
+                  {settings.storeName || 'BENGKEL-Q MOTOR & MOBIL'}
                 </h1>
-                <div className="flex items-center gap-1.5 text-[10px] text-zinc-400 font-mono">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                <div className="flex items-center gap-1.5 text-[10px] text-blue-200 font-mono">
+                  <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
                   <span className="truncate">POS Servis &amp; Sparepart</span>
                 </div>
               </div>
@@ -163,7 +180,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <button
               type="button"
               onClick={() => setIsCollapsed(!isCollapsed)}
-              className="hidden lg:flex p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors cursor-pointer"
+              className="hidden lg:flex p-1.5 rounded-lg text-zinc-300 hover:text-white hover:bg-zinc-900 transition-colors cursor-pointer"
               title={isCollapsed ? 'Perluas Menu' : 'Persempit Menu'}
             >
               {isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
@@ -171,7 +188,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <button
               type="button"
               onClick={() => setIsMobileDrawerOpen(false)}
-              className="lg:hidden p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors cursor-pointer"
+              className="lg:hidden p-1.5 rounded-lg text-zinc-300 hover:text-white hover:bg-zinc-900 transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -179,25 +196,25 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* Shift Quick Status Bar inside Sidebar */}
-        <div className="px-3 pt-3 pb-1 shrink-0">
+        <div className="px-3 pt-2.5 pb-1 shrink-0">
           <button
             type="button"
             onClick={onOpenShiftModal}
-            className={`w-full p-2.5 rounded-xl border flex items-center justify-between transition-all cursor-pointer ${
+            className={`w-full px-3 py-2 rounded-xl border flex items-center justify-between transition-all cursor-pointer ${
               activeShift
-                ? 'bg-zinc-900 border-zinc-700 text-zinc-200 hover:bg-zinc-850 hover:border-zinc-600'
-                : 'bg-zinc-900/50 border-dashed border-zinc-800 text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200'
+                ? 'bg-zinc-900 border-zinc-700 text-white hover:border-zinc-500'
+                : 'bg-zinc-900/50 border-dashed border-zinc-800 text-zinc-300 hover:bg-zinc-900 hover:text-white'
             }`}
             title="Kelola Shift & Kas Fisik"
           >
             <div className="flex items-center gap-2 overflow-hidden">
-              <Clock className={`w-4 h-4 shrink-0 ${activeShift ? 'text-amber-400' : 'text-zinc-500'}`} />
+              <Clock className={`w-4 h-4 shrink-0 ${activeShift ? 'text-emerald-400' : 'text-red-400'}`} />
               {!isCollapsed && (
                 <div className="text-left truncate">
                   <div className="text-[11px] font-bold leading-none">
-                    {activeShift ? 'Shift Aktif' : 'Shift Belum Buka'}
+                    {activeShift ? 'Shift Kasir Aktif' : 'Shift Belum Buka'}
                   </div>
-                  <div className="text-[9px] text-zinc-400 font-mono mt-0.5 truncate">
+                  <div className="text-[9px] text-blue-200 font-mono mt-0.5 truncate">
                     {activeShift ? 'Klik untuk Rekap/Tutup' : 'Klik untuk Buka Shift'}
                   </div>
                 </div>
@@ -206,338 +223,345 @@ export const Sidebar: React.FC<SidebarProps> = ({
             {!isCollapsed && (
               <span
                 className={`w-2 h-2 rounded-full ${
-                  activeShift ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'
+                  activeShift ? 'bg-emerald-400 animate-pulse' : 'bg-red-500'
                 }`}
               />
             )}
           </button>
         </div>
 
-        {/* Middle: Navigation Links with Organized Sub-Menus */}
-        <nav className="flex-1 overflow-y-auto px-3 py-2 space-y-3 scrollbar-thin">
-          {/* Section 1: MENU UTAMA BENGKEL */}
-          <div className="space-y-1.5">
-            {!isCollapsed && (
-              <div className="px-3 py-1.5 text-xs font-black text-amber-500 uppercase tracking-wider font-mono flex items-center justify-between">
-                <span>MENU UTAMA BENGKEL</span>
-              </div>
-            )}
+        {/* Middle: Space-Saving Dropdown Navigation */}
+        <nav className="flex-1 overflow-y-auto px-3 py-2 space-y-1.5 scrollbar-thin">
+          {/* 0. Direct Dashboard Button */}
+          <button
+            id="sidebar-tab-dashboard"
+            type="button"
+            onClick={() => handleSelectTab('dashboard')}
+            title="Ringkasan & Laba Bersih Bengkel"
+            className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold transition-all cursor-pointer group ${
+              activeTab === 'dashboard'
+                ? 'bg-amber-500 text-white shadow-md shadow-red-600/25 border border-white/20'
+                : 'text-blue-100 hover:text-white hover:bg-zinc-900'
+            }`}
+          >
+            <div className="flex items-center gap-2.5 overflow-hidden">
+              <LayoutDashboard
+                className={`w-4 h-4 shrink-0 transition-transform group-hover:scale-110 ${
+                  activeTab === 'dashboard' ? 'text-white stroke-[2.5]' : 'text-red-400'
+                }`}
+              />
+              {!isCollapsed && <span className="truncate">Ringkasan &amp; Laba</span>}
+            </div>
+          </button>
 
-            {/* Dashboard Button */}
+          {/* ============================================================ */}
+          {/* DROPDOWN 1: MENU KASIR (Servis & Sparepart) */}
+          {/* ============================================================ */}
+          <div className="rounded-xl border border-zinc-800/90 bg-zinc-900/40 overflow-hidden">
             <button
-              id="sidebar-tab-dashboard"
               type="button"
-              onClick={() => handleSelectTab('dashboard')}
-              title="Ringkasan & Laba Bersih Bengkel"
-              className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-sm font-extrabold transition-all cursor-pointer group ${
-                activeTab === 'dashboard'
-                  ? 'bg-amber-500 text-zinc-950 shadow-md shadow-amber-500/20'
-                  : 'text-zinc-300 hover:text-white hover:bg-zinc-900'
+              onClick={() => toggleDropdown('kasir')}
+              title="Menu Kasir Servis & Sparepart"
+              className={`w-full flex items-center justify-between px-3 py-2.5 text-xs sm:text-sm font-extrabold transition-all cursor-pointer ${
+                isKasirGroupActive && openDropdown !== 'kasir'
+                  ? 'bg-red-600/20 text-white border-l-4 border-red-500'
+                  : 'text-white hover:bg-zinc-900'
               }`}
             >
-              <div className="flex items-center gap-3 overflow-hidden">
-                <LayoutDashboard
-                  className={`w-5 h-5 shrink-0 transition-transform group-hover:scale-110 ${
-                    activeTab === 'dashboard' ? 'text-zinc-950 stroke-[2.5]' : 'text-amber-400'
-                  }`}
-                />
-                {!isCollapsed && <span className="truncate">Ringkasan &amp; Laba</span>}
+              <div className="flex items-center gap-2.5 overflow-hidden">
+                <Wrench className="w-4 h-4 shrink-0 text-red-400" />
+                {!isCollapsed && <span className="truncate">Kasir &amp; Transaksi</span>}
               </div>
-            </button>
-
-            {/* Navigasi 1: Kasir Servis Kendaraan (Plat Nomor, Mekanik, Keluhan & Jasa) */}
-            <button
-              id="sidebar-tab-cashier-service"
-              type="button"
-              onClick={() => handleSelectTab('cashier-service')}
-              title="Kasir Servis Motor & Mobil (Input Plat, Mekanik & Jasa)"
-              className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-sm font-extrabold transition-all cursor-pointer group ${
-                activeTab === 'cashier-service' || activeTab === 'cashier'
-                  ? 'bg-amber-500 text-zinc-950 shadow-md shadow-amber-500/20'
-                  : 'text-zinc-300 hover:text-white hover:bg-zinc-900'
-              }`}
-            >
-              <div className="flex items-center gap-3 overflow-hidden">
-                <Wrench
-                  className={`w-5 h-5 shrink-0 transition-transform group-hover:scale-110 ${
-                    activeTab === 'cashier-service' || activeTab === 'cashier' ? 'text-zinc-950 stroke-[2.5]' : 'text-amber-400'
-                  }`}
-                />
-                {!isCollapsed && (
-                  <div className="text-left truncate">
-                    <div className="leading-tight truncate">Kasir Servis</div>
-                    <div
-                      className={`text-[10px] font-mono truncate ${
-                        activeTab === 'cashier-service' || activeTab === 'cashier'
-                          ? 'text-zinc-900 font-bold'
-                          : 'text-zinc-400 font-normal'
-                      }`}
-                    >
-                      Plat, Mekanik &amp; Jasa
-                    </div>
-                  </div>
-                )}
-              </div>
-            </button>
-
-            {/* Navigasi 2: Kasir Sparepart & Oli (Penjualan Langsung Eceran) */}
-            <button
-              id="sidebar-tab-cashier-sparepart"
-              type="button"
-              onClick={() => handleSelectTab('cashier-sparepart')}
-              title="Kasir Sparepart & Oli (Penjualan Langsung Tanpa Servis)"
-              className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-sm font-extrabold transition-all cursor-pointer group ${
-                activeTab === 'cashier-sparepart'
-                  ? 'bg-amber-500 text-zinc-950 shadow-md shadow-amber-500/20'
-                  : 'text-zinc-300 hover:text-white hover:bg-zinc-900'
-              }`}
-            >
-              <div className="flex items-center gap-3 overflow-hidden">
-                <ShoppingBag
-                  className={`w-5 h-5 shrink-0 transition-transform group-hover:scale-110 ${
-                    activeTab === 'cashier-sparepart' ? 'text-zinc-950 stroke-[2.5]' : 'text-emerald-400'
-                  }`}
-                />
-                {!isCollapsed && (
-                  <div className="text-left truncate">
-                    <div className="leading-tight truncate">Kasir Sparepart</div>
-                    <div
-                      className={`text-[10px] font-mono truncate ${
-                        activeTab === 'cashier-sparepart'
-                          ? 'text-zinc-900 font-bold'
-                          : 'text-zinc-400 font-normal'
-                      }`}
-                    >
-                      Penjualan Oli &amp; Part
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {!isCollapsed && activeTab === 'cashier-sparepart' && cartItemCount > 0 && (
-                <span className="px-2 py-0.5 rounded-full text-xs font-black font-mono bg-zinc-950 text-amber-400 shrink-0">
-                  {cartItemCount}
-                </span>
+              {!isCollapsed && (
+                <div className="flex items-center gap-1.5">
+                  {cartItemCount > 0 && (
+                    <span className="px-1.5 py-0.5 rounded-full text-[10px] font-black font-mono bg-red-600 text-white">
+                      {cartItemCount}
+                    </span>
+                  )}
+                  <ChevronDown
+                    className={`w-4 h-4 text-blue-300 transition-transform duration-200 ${
+                      openDropdown === 'kasir' ? 'rotate-180 text-white' : ''
+                    }`}
+                  />
+                </div>
               )}
             </button>
 
-            {/* Prompt 1: Stok Sparepart & Peringatan Stok */}
-            <button
-              id="sidebar-tab-inventory"
-              type="button"
-              onClick={() => handleSelectTab('inventory')}
-              title="Manajemen Stok Sparepart & Oli"
-              className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-sm font-extrabold transition-all cursor-pointer group ${
-                activeTab === 'inventory'
-                  ? 'bg-amber-500 text-zinc-950 shadow-md shadow-amber-500/20'
-                  : 'text-zinc-300 hover:text-white hover:bg-zinc-900'
-              }`}
-            >
-              <div className="flex items-center gap-3 overflow-hidden">
-                <Package
-                  className={`w-5 h-5 shrink-0 transition-transform group-hover:scale-110 ${
-                    activeTab === 'inventory' ? 'text-zinc-950 stroke-[2.5]' : 'text-sky-400'
+            {(!isCollapsed && openDropdown === 'kasir') && (
+              <div className="p-1.5 pt-1 space-y-1 bg-zinc-950/60 border-t border-zinc-800/80">
+                {/* Kasir Servis */}
+                <button
+                  id="sidebar-tab-cashier-service"
+                  type="button"
+                  onClick={() => handleSelectTab('cashier-service')}
+                  className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-extrabold transition-all cursor-pointer ${
+                    activeTab === 'cashier-service' || activeTab === 'cashier'
+                      ? 'bg-amber-500 text-white shadow-sm'
+                      : 'text-blue-100 hover:text-white hover:bg-zinc-900'
                   }`}
-                />
-                {!isCollapsed && <span className="truncate">Stok Sparepart &amp; Oli</span>}
-              </div>
-            </button>
+                >
+                  <div className="flex items-center gap-2.5 truncate">
+                    <Wrench className="w-3.5 h-3.5 shrink-0" />
+                    <div className="text-left truncate">
+                      <div className="leading-tight truncate">Kasir Servis</div>
+                      <div className="text-[10px] opacity-80 font-mono font-normal truncate">
+                        Plat, Mekanik &amp; Jasa
+                      </div>
+                    </div>
+                  </div>
+                </button>
 
-            {/* Prompt 2: Kinerja & Komisi Mekanik */}
-            <button
-              id="sidebar-tab-mechanics"
-              type="button"
-              onClick={() => handleSelectTab('mechanics')}
-              title="Laporan Kinerja & Komisi Bagi Hasil Mekanik"
-              className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-sm font-extrabold transition-all cursor-pointer group ${
-                activeTab === 'mechanics'
-                  ? 'bg-amber-500 text-zinc-950 shadow-md shadow-amber-500/20'
-                  : 'text-zinc-300 hover:text-white hover:bg-zinc-900'
-              }`}
-            >
-              <div className="flex items-center gap-3 overflow-hidden">
-                <Users
-                  className={`w-5 h-5 shrink-0 transition-transform group-hover:scale-110 ${
-                    activeTab === 'mechanics' ? 'text-zinc-950 stroke-[2.5]' : 'text-purple-400'
+                {/* Kasir Sparepart */}
+                <button
+                  id="sidebar-tab-cashier-sparepart"
+                  type="button"
+                  onClick={() => handleSelectTab('cashier-sparepart')}
+                  className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-extrabold transition-all cursor-pointer ${
+                    activeTab === 'cashier-sparepart'
+                      ? 'bg-amber-500 text-white shadow-sm'
+                      : 'text-blue-100 hover:text-white hover:bg-zinc-900'
                   }`}
-                />
-                {!isCollapsed && <span className="truncate">Komisi Mekanik</span>}
-              </div>
-            </button>
-
-            {/* Prompt 3: Riwayat Servis Berdasarkan Plat Nomor */}
-            <button
-              id="sidebar-tab-service-records"
-              type="button"
-              onClick={() => handleSelectTab('service-records')}
-              title="Riwayat Servis Pelanggan Berdasarkan Plat Nomor"
-              className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-sm font-extrabold transition-all cursor-pointer group ${
-                activeTab === 'service-records'
-                  ? 'bg-amber-500 text-zinc-950 shadow-md shadow-amber-500/20'
-                  : 'text-zinc-300 hover:text-white hover:bg-zinc-900'
-              }`}
-            >
-              <div className="flex items-center gap-3 overflow-hidden">
-                <Car
-                  className={`w-5 h-5 shrink-0 transition-transform group-hover:scale-110 ${
-                    activeTab === 'service-records' ? 'text-zinc-950 stroke-[2.5]' : 'text-indigo-400'
-                  }`}
-                />
-                {!isCollapsed && <span className="truncate">Riwayat Servis Plat</span>}
-              </div>
-            </button>
-
-            {/* Prompt 5: Buku Piutang Servis (Tempo / Kasbon Pelanggan) */}
-            <button
-              id="sidebar-tab-debts"
-              type="button"
-              onClick={() => handleSelectTab('debts')}
-              title="Buku Piutang Servis & Kasbon Pelanggan"
-              className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-sm font-extrabold transition-all cursor-pointer group ${
-                activeTab === 'debts'
-                  ? 'bg-amber-500 text-zinc-950 shadow-md shadow-amber-500/20'
-                  : 'text-zinc-300 hover:text-white hover:bg-zinc-900'
-              }`}
-            >
-              <div className="flex items-center gap-3 overflow-hidden">
-                <BookOpen
-                  className={`w-5 h-5 shrink-0 transition-transform group-hover:scale-110 ${
-                    activeTab === 'debts' ? 'text-zinc-950 stroke-[2.5]' : 'text-rose-400'
-                  }`}
-                />
-                {!isCollapsed && <span className="truncate">Piutang &amp; Tempo</span>}
-              </div>
-            </button>
-          </div>
-
-          {/* Section 2: KAS & BIAYA OPERASIONAL */}
-          <div className="space-y-1.5 pt-2 border-t border-zinc-800">
-            {!isCollapsed && (
-              <div className="px-3 py-1.5 text-xs font-black text-zinc-400 uppercase tracking-wider font-mono flex items-center justify-between">
-                <span>KAS &amp; BIAYA</span>
+                >
+                  <div className="flex items-center gap-2.5 truncate">
+                    <ShoppingBag className="w-3.5 h-3.5 shrink-0" />
+                    <div className="text-left truncate">
+                      <div className="leading-tight truncate">Kasir Sparepart</div>
+                      <div className="text-[10px] opacity-80 font-mono font-normal truncate">
+                        Penjualan Oli &amp; Part
+                      </div>
+                    </div>
+                  </div>
+                  {cartItemCount > 0 && (
+                    <span className="px-1.5 py-0.5 rounded-full text-[10px] font-black font-mono bg-white text-red-600 shrink-0">
+                      {cartItemCount}
+                    </span>
+                  )}
+                </button>
               </div>
             )}
-
-            {/* Biaya Operasional */}
-            <button
-              id="sidebar-tab-expenses"
-              type="button"
-              onClick={() => handleSelectTab('expenses')}
-              title="Catatan Biaya & Kas Keluar Bengkel"
-              className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-sm font-extrabold transition-all cursor-pointer group ${
-                activeTab === 'expenses'
-                  ? 'bg-amber-500 text-zinc-950 shadow-md shadow-amber-500/20'
-                  : 'text-zinc-300 hover:text-white hover:bg-zinc-900'
-              }`}
-            >
-              <div className="flex items-center gap-3 overflow-hidden">
-                <Wallet
-                  className={`w-5 h-5 shrink-0 transition-transform group-hover:scale-110 ${
-                    activeTab === 'expenses' ? 'text-zinc-950 stroke-[2.5]' : 'text-rose-400'
-                  }`}
-                />
-                {!isCollapsed && <span className="truncate">Kas Keluar / Biaya</span>}
-              </div>
-            </button>
-
-            {/* Kas Laci & Bank */}
-            <button
-              id="sidebar-tab-branches"
-              type="button"
-              onClick={() => handleSelectTab('branches')}
-              title="Saldo Kas Laci & Rekening Bank Bengkel"
-              className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-sm font-extrabold transition-all cursor-pointer group ${
-                activeTab === 'branches'
-                  ? 'bg-amber-500 text-zinc-950 shadow-md shadow-amber-500/20'
-                  : 'text-zinc-300 hover:text-white hover:bg-zinc-900'
-              }`}
-            >
-              <div className="flex items-center gap-3 overflow-hidden">
-                <Building2
-                  className={`w-5 h-5 shrink-0 transition-transform group-hover:scale-110 ${
-                    activeTab === 'branches' ? 'text-zinc-950 stroke-[2.5]' : 'text-emerald-400'
-                  }`}
-                />
-                {!isCollapsed && <span className="truncate">Saldo Kas &amp; Bank</span>}
-              </div>
-            </button>
           </div>
 
-          {/* Section 3: LAPORAN & PENGATURAN */}
-          <div className="space-y-1.5 pt-2 border-t border-zinc-800">
-            {!isCollapsed && (
-              <div className="px-3 py-1.5 text-xs font-black text-zinc-400 uppercase tracking-wider font-mono flex items-center justify-between">
-                <span>LAPORAN &amp; SISTEM</span>
+          {/* ============================================================ */}
+          {/* DROPDOWN 2: BENGKEL & GUDANG (Stok, Mekanik, Riwayat Plat) */}
+          {/* ============================================================ */}
+          <div className="rounded-xl border border-zinc-800/90 bg-zinc-900/40 overflow-hidden">
+            <button
+              type="button"
+              onClick={() => toggleDropdown('bengkel')}
+              title="Gudang Stok, Komisi Mekanik & Riwayat Plat"
+              className={`w-full flex items-center justify-between px-3 py-2.5 text-xs sm:text-sm font-extrabold transition-all cursor-pointer ${
+                isBengkelGroupActive && openDropdown !== 'bengkel'
+                  ? 'bg-red-600/20 text-white border-l-4 border-red-500'
+                  : 'text-white hover:bg-zinc-900'
+              }`}
+            >
+              <div className="flex items-center gap-2.5 overflow-hidden">
+                <Package className="w-4 h-4 shrink-0 text-sky-300" />
+                {!isCollapsed && <span className="truncate">Gudang &amp; Mekanik</span>}
+              </div>
+              {!isCollapsed && (
+                <ChevronDown
+                  className={`w-4 h-4 text-blue-300 transition-transform duration-200 ${
+                    openDropdown === 'bengkel' ? 'rotate-180 text-white' : ''
+                  }`}
+                />
+              )}
+            </button>
+
+            {(!isCollapsed && openDropdown === 'bengkel') && (
+              <div className="p-1.5 pt-1 space-y-1 bg-zinc-950/60 border-t border-zinc-800/80">
+                <button
+                  id="sidebar-tab-inventory"
+                  type="button"
+                  onClick={() => handleSelectTab('inventory')}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-extrabold transition-all cursor-pointer ${
+                    activeTab === 'inventory'
+                      ? 'bg-amber-500 text-white shadow-sm'
+                      : 'text-blue-100 hover:text-white hover:bg-zinc-900'
+                  }`}
+                >
+                  <Package className="w-3.5 h-3.5 shrink-0" />
+                  <span className="truncate">Stok Sparepart &amp; Oli</span>
+                </button>
+
+                <button
+                  id="sidebar-tab-mechanics"
+                  type="button"
+                  onClick={() => handleSelectTab('mechanics')}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-extrabold transition-all cursor-pointer ${
+                    activeTab === 'mechanics'
+                      ? 'bg-amber-500 text-white shadow-sm'
+                      : 'text-blue-100 hover:text-white hover:bg-zinc-900'
+                  }`}
+                >
+                  <Users className="w-3.5 h-3.5 shrink-0" />
+                  <span className="truncate">Komisi Mekanik</span>
+                </button>
+
+                <button
+                  id="sidebar-tab-service-records"
+                  type="button"
+                  onClick={() => handleSelectTab('service-records')}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-extrabold transition-all cursor-pointer ${
+                    activeTab === 'service-records'
+                      ? 'bg-amber-500 text-white shadow-sm'
+                      : 'text-blue-100 hover:text-white hover:bg-zinc-900'
+                  }`}
+                >
+                  <Car className="w-3.5 h-3.5 shrink-0" />
+                  <span className="truncate">Riwayat Servis Plat</span>
+                </button>
               </div>
             )}
+          </div>
 
-            <div className="space-y-1.5">
-              {/* Reports */}
-              <button
-                id="sidebar-tab-reports"
-                type="button"
-                onClick={() => handleSelectTab('reports')}
-                title="Laporan Penjualan & Transaksi"
-                className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-sm font-extrabold transition-all cursor-pointer group ${
-                  activeTab === 'reports'
-                    ? 'bg-amber-500 text-zinc-950 shadow-md shadow-amber-500/20'
-                    : 'text-zinc-300 hover:text-white hover:bg-zinc-900'
-                }`}
-              >
-                <div className="flex items-center gap-3 overflow-hidden">
-                  <BarChart3
-                    className={`w-5 h-5 shrink-0 transition-transform group-hover:scale-110 ${
-                      activeTab === 'reports' ? 'text-zinc-950 stroke-[2.5]' : 'text-amber-400'
-                    }`}
-                  />
-                  {!isCollapsed && <span className="truncate">Laporan Penjualan</span>}
-                </div>
-              </button>
+          {/* ============================================================ */}
+          {/* DROPDOWN 3: KEUANGAN & KAS (Piutang, Kas Keluar, Saldo Bank) */}
+          {/* ============================================================ */}
+          <div className="rounded-xl border border-zinc-800/90 bg-zinc-900/40 overflow-hidden">
+            <button
+              type="button"
+              onClick={() => toggleDropdown('keuangan')}
+              title="Piutang Tempo, Biaya Operasional & Saldo Kas"
+              className={`w-full flex items-center justify-between px-3 py-2.5 text-xs sm:text-sm font-extrabold transition-all cursor-pointer ${
+                isKeuanganGroupActive && openDropdown !== 'keuangan'
+                  ? 'bg-red-600/20 text-white border-l-4 border-red-500'
+                  : 'text-white hover:bg-zinc-900'
+              }`}
+            >
+              <div className="flex items-center gap-2.5 overflow-hidden">
+                <Wallet className="w-4 h-4 shrink-0 text-emerald-400" />
+                {!isCollapsed && <span className="truncate">Kas &amp; Piutang</span>}
+              </div>
+              {!isCollapsed && (
+                <ChevronDown
+                  className={`w-4 h-4 text-blue-300 transition-transform duration-200 ${
+                    openDropdown === 'keuangan' ? 'rotate-180 text-white' : ''
+                  }`}
+                />
+              )}
+            </button>
 
-              {/* Settings */}
-              <button
-                id="sidebar-tab-settings"
-                type="button"
-                onClick={() => handleSelectTab('settings')}
-                title="Pengaturan Bengkel & Printer"
-                className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-sm font-extrabold transition-all cursor-pointer group ${
-                  activeTab === 'settings'
-                    ? 'bg-amber-500 text-zinc-950 shadow-md shadow-amber-500/20'
-                    : 'text-zinc-300 hover:text-white hover:bg-zinc-900'
-                }`}
-              >
-                <div className="flex items-center gap-3 overflow-hidden">
-                  <Settings
-                    className={`w-5 h-5 shrink-0 transition-transform group-hover:scale-110 ${
-                      activeTab === 'settings' ? 'text-zinc-950 stroke-[2.5]' : 'text-zinc-400'
-                    }`}
-                  />
-                  {!isCollapsed && <span className="truncate">Pengaturan Bengkel</span>}
-                </div>
-              </button>
+            {(!isCollapsed && openDropdown === 'keuangan') && (
+              <div className="p-1.5 pt-1 space-y-1 bg-zinc-950/60 border-t border-zinc-800/80">
+                <button
+                  id="sidebar-tab-debts"
+                  type="button"
+                  onClick={() => handleSelectTab('debts')}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-extrabold transition-all cursor-pointer ${
+                    activeTab === 'debts'
+                      ? 'bg-amber-500 text-white shadow-sm'
+                      : 'text-blue-100 hover:text-white hover:bg-zinc-900'
+                  }`}
+                >
+                  <BookOpen className="w-3.5 h-3.5 shrink-0" />
+                  <span className="truncate">Piutang &amp; Tempo</span>
+                </button>
 
-              {/* Guide */}
-              <button
-                id="sidebar-tab-guide"
-                type="button"
-                onClick={() => handleSelectTab('guide')}
-                title="Panduan Kasir Bengkel"
-                className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-sm font-extrabold transition-all cursor-pointer group ${
-                  activeTab === 'guide'
-                    ? 'bg-amber-500 text-zinc-950 shadow-md shadow-amber-500/20'
-                    : 'text-zinc-300 hover:text-white hover:bg-zinc-900'
-                }`}
-              >
-                <div className="flex items-center gap-3 overflow-hidden">
-                  <Sparkles
-                    className={`w-5 h-5 shrink-0 transition-transform group-hover:scale-110 ${
-                      activeTab === 'guide' ? 'text-zinc-950 stroke-[2.5]' : 'text-amber-400'
-                    }`}
-                  />
-                  {!isCollapsed && <span className="truncate">Panduan Kasir</span>}
-                </div>
-              </button>
-            </div>
+                <button
+                  id="sidebar-tab-expenses"
+                  type="button"
+                  onClick={() => handleSelectTab('expenses')}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-extrabold transition-all cursor-pointer ${
+                    activeTab === 'expenses'
+                      ? 'bg-amber-500 text-white shadow-sm'
+                      : 'text-blue-100 hover:text-white hover:bg-zinc-900'
+                  }`}
+                >
+                  <Wallet className="w-3.5 h-3.5 shrink-0" />
+                  <span className="truncate">Kas Keluar / Biaya</span>
+                </button>
+
+                <button
+                  id="sidebar-tab-branches"
+                  type="button"
+                  onClick={() => handleSelectTab('branches')}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-extrabold transition-all cursor-pointer ${
+                    activeTab === 'branches'
+                      ? 'bg-amber-500 text-white shadow-sm'
+                      : 'text-blue-100 hover:text-white hover:bg-zinc-900'
+                  }`}
+                >
+                  <Building2 className="w-3.5 h-3.5 shrink-0" />
+                  <span className="truncate">Saldo Kas &amp; Bank</span>
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* ============================================================ */}
+          {/* DROPDOWN 4: LAPORAN & SISTEM (Laporan, Pengaturan, Panduan) */}
+          {/* ============================================================ */}
+          <div className="rounded-xl border border-zinc-800/90 bg-zinc-900/40 overflow-hidden">
+            <button
+              type="button"
+              onClick={() => toggleDropdown('sistem')}
+              title="Laporan Penjualan, Pengaturan & Panduan"
+              className={`w-full flex items-center justify-between px-3 py-2.5 text-xs sm:text-sm font-extrabold transition-all cursor-pointer ${
+                isSistemGroupActive && openDropdown !== 'sistem'
+                  ? 'bg-red-600/20 text-white border-l-4 border-red-500'
+                  : 'text-white hover:bg-zinc-900'
+              }`}
+            >
+              <div className="flex items-center gap-2.5 overflow-hidden">
+                <BarChart3 className="w-4 h-4 shrink-0 text-amber-300" />
+                {!isCollapsed && <span className="truncate">Laporan &amp; Sistem</span>}
+              </div>
+              {!isCollapsed && (
+                <ChevronDown
+                  className={`w-4 h-4 text-blue-300 transition-transform duration-200 ${
+                    openDropdown === 'sistem' ? 'rotate-180 text-white' : ''
+                  }`}
+                />
+              )}
+            </button>
+
+            {(!isCollapsed && openDropdown === 'sistem') && (
+              <div className="p-1.5 pt-1 space-y-1 bg-zinc-950/60 border-t border-zinc-800/80">
+                <button
+                  id="sidebar-tab-reports"
+                  type="button"
+                  onClick={() => handleSelectTab('reports')}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-extrabold transition-all cursor-pointer ${
+                    activeTab === 'reports'
+                      ? 'bg-amber-500 text-white shadow-sm'
+                      : 'text-blue-100 hover:text-white hover:bg-zinc-900'
+                  }`}
+                >
+                  <BarChart3 className="w-3.5 h-3.5 shrink-0" />
+                  <span className="truncate">Laporan Penjualan</span>
+                </button>
+
+                <button
+                  id="sidebar-tab-settings"
+                  type="button"
+                  onClick={() => handleSelectTab('settings')}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-extrabold transition-all cursor-pointer ${
+                    activeTab === 'settings'
+                      ? 'bg-amber-500 text-white shadow-sm'
+                      : 'text-blue-100 hover:text-white hover:bg-zinc-900'
+                  }`}
+                >
+                  <Settings className="w-3.5 h-3.5 shrink-0" />
+                  <span className="truncate">Pengaturan Bengkel</span>
+                </button>
+
+                <button
+                  id="sidebar-tab-guide"
+                  type="button"
+                  onClick={() => handleSelectTab('guide')}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-extrabold transition-all cursor-pointer ${
+                    activeTab === 'guide'
+                      ? 'bg-amber-500 text-white shadow-sm'
+                      : 'text-blue-100 hover:text-white hover:bg-zinc-900'
+                  }`}
+                >
+                  <Sparkles className="w-3.5 h-3.5 shrink-0" />
+                  <span className="truncate">Panduan Kasir</span>
+                </button>
+              </div>
+            )}
           </div>
         </nav>
 

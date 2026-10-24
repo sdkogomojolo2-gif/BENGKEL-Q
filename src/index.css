@@ -2,38 +2,77 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+@theme {
+  /* Merah Bengkel (Racing Red replacing old yellow/amber accents across the app) */
+  --color-amber-50: #fef2f2;
+  --color-amber-100: #fee2e2;
+  --color-amber-200: #fecaca;
+  --color-amber-300: #fca5a5;
+  --color-amber-400: #ef4444;
+  --color-amber-500: #dc2626;
+  --color-amber-600: #b91c1c;
+  --color-amber-700: #991b1b;
+  --color-amber-800: #7f1d1d;
+  --color-amber-900: #450a0a;
+  --color-amber-950: #2a0404;
+
+  /* Biru & Putih Bengkel (Royal Blue & Clean Crisp White-Blue Slate replacing old dark gray zinc) */
+  --color-zinc-50: #f8fafc;
+  --color-zinc-100: #eff6ff;
+  --color-zinc-200: #bfdbfe;
+  --color-zinc-300: #93c5fd;
+  --color-zinc-400: #60a5fa;
+  --color-zinc-500: #2563eb;
+  --color-zinc-600: #1d4ed8;
+  --color-zinc-700: #1e40af;
+  --color-zinc-800: #1e3a8a;
+  --color-zinc-850: #172554;
+  --color-zinc-900: #172554;
+  --color-zinc-950: #0f1d40;
+}
+
 @layer base {
   :root {
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    color: #09090b;
+    color: #0f1d40;
   }
 
   body {
     min-height: 100vh;
     overflow-x: hidden;
-    color: #09090b;
+    background-color: #f8fafc;
+    color: #0f1d40;
   }
 
   .dark body,
   .dark {
-    color: #f4f4f5;
+    background-color: #0b1530;
+    color: #ffffff;
   }
 
   /* High-contrast crisp text for form controls */
   input, select, textarea {
-    color: #09090b;
+    color: #0f1d40;
   }
 
   .dark input,
   .dark select,
   .dark textarea {
-    color: #f4f4f5;
+    color: #ffffff;
   }
 
-  /* Yellow / Amber buttons always have sharp bold black text */
+  /* Racing Red buttons always have sharp bold WHITE text & icons */
   .bg-amber-500,
-  .bg-amber-400 {
-    color: #09090b !important;
+  .bg-amber-400,
+  .bg-amber-600 {
+    color: #ffffff !important;
+  }
+
+  .bg-amber-500 .text-zinc-950,
+  .bg-amber-500 .text-zinc-900,
+  .bg-amber-400 .text-zinc-950,
+  .bg-amber-400 .text-zinc-900 {
+    color: #ffffff !important;
   }
 
   .font-mono,
@@ -43,50 +82,54 @@
   }
 }
 
-/* Minimalist High-Contrast Scrollbars */
+/* Minimalist High-Contrast Scrollbars in Blue & Red */
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: #eff6ff;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(113, 113, 122, 0.3);
+  background: #2563eb;
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(113, 113, 122, 0.5);
+  background: #dc2626;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #0f1d40;
 }
 
 .dark ::-webkit-scrollbar-thumb {
-  background: rgba(161, 161, 170, 0.2);
+  background: #1d4ed8;
 }
 
 .dark ::-webkit-scrollbar-thumb:hover {
-  background: rgba(245, 158, 11, 0.4);
+  background: #ef4444;
 }
 
-/* Minimalist Clean Grid Background Pattern */
+/* Clean Blue-White Grid Background Pattern */
 .bg-grid-slate-pattern {
   background-size: 28px 28px;
   background-image: 
-    linear-gradient(to right, rgba(24, 24, 27, 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(24, 24, 27, 0.04) 1px, transparent 1px);
+    linear-gradient(to right, rgba(30, 58, 138, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(30, 58, 138, 0.05) 1px, transparent 1px);
 }
 
 .dark .bg-grid-slate-pattern {
   background-size: 28px 28px;
   background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
 }
 
-/* Anti-glare High Contrast Selection */
+/* Red & White Selection */
 ::selection {
-  background-color: #f59e0b;
-  color: #09090b;
+  background-color: #dc2626;
+  color: #ffffff;
 }

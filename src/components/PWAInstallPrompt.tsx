@@ -57,9 +57,7 @@ export const PWAInstallPrompt: React.FC<PWAInstallPromptProps> = ({
           {/* Header */}
           <div className="p-5 border-b border-zinc-800 flex items-center justify-between bg-zinc-950">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center font-black text-lg">
-                <Sparkles className="w-5 h-5 text-amber-400" />
-              </div>
+              <img src="/icon.svg" alt="BENGKEL-Q" className="w-10 h-10 rounded-xl shadow-md border border-white/20 shrink-0 object-cover" />
               <div>
                 <h3 className="font-extrabold text-base tracking-tight text-white">
                   Pasang BENGKEL-Q di Perangkat
@@ -123,9 +121,7 @@ export const PWAInstallPrompt: React.FC<PWAInstallPromptProps> = ({
             {activeGuideTab === 'android' && (
               <div className="space-y-3">
                 <div className="p-3 bg-zinc-950 border border-amber-500/20 rounded-2xl flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-amber-500 text-zinc-950 flex items-center justify-center font-black text-sm shrink-0">
-                    Q
-                  </div>
+                  <img src="/icon.svg" alt="BENGKEL-Q" className="w-10 h-10 rounded-xl shadow-md border border-white/20 shrink-0 object-cover" />
                   <div>
                     <h4 className="text-xs font-bold text-amber-400">
                       Nama Aplikasi di Layar: <span className="font-black text-sm text-white">BENGKEL-Q</span>
@@ -176,9 +172,7 @@ export const PWAInstallPrompt: React.FC<PWAInstallPromptProps> = ({
             {activeGuideTab === 'laptop' && (
               <div className="space-y-3">
                 <div className="p-3 bg-zinc-950 border border-amber-500/20 rounded-2xl flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-amber-500 text-zinc-950 flex items-center justify-center font-black text-sm shrink-0">
-                    Q
-                  </div>
+                  <img src="/icon.svg" alt="BENGKEL-Q" className="w-10 h-10 rounded-xl shadow-md border border-white/20 shrink-0 object-cover" />
                   <div>
                     <h4 className="text-xs font-bold text-amber-400">
                       Aplikasi Desktop: <span className="font-black text-sm text-white">BENGKEL-Q</span>
@@ -221,9 +215,7 @@ export const PWAInstallPrompt: React.FC<PWAInstallPromptProps> = ({
             {activeGuideTab === 'ios' && (
               <div className="space-y-3">
                 <div className="p-3 bg-zinc-950 border border-amber-500/20 rounded-2xl flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-amber-500 text-zinc-950 flex items-center justify-center font-black text-sm shrink-0">
-                    Q
-                  </div>
+                  <img src="/icon.svg" alt="BENGKEL-Q" className="w-10 h-10 rounded-xl shadow-md border border-white/20 shrink-0 object-cover" />
                   <div>
                     <h4 className="text-xs font-bold text-amber-400">
                       Nama Aplikasi di iOS: <span className="font-black text-sm text-white">BENGKEL-Q</span>
@@ -341,9 +333,7 @@ export const PWAInstallPrompt: React.FC<PWAInstallPromptProps> = ({
       <>
         <div className="p-4 rounded-2xl border border-zinc-800 bg-zinc-900 space-y-3">
           <div className="flex items-start gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-500 text-zinc-950 flex items-center justify-center font-black text-lg shrink-0 shadow-md">
-              Q
-            </div>
+            <img src="/icon.svg" alt="BENGKEL-Q" className="w-10 h-10 rounded-xl shadow-md border border-white/20 shrink-0 object-cover" />
             <div className="flex-1">
               <h4 className="text-sm font-bold text-white flex items-center gap-2">
                 <span>Pasang Aplikasi BENGKEL-Q</span>
@@ -388,9 +378,7 @@ export const PWAInstallPrompt: React.FC<PWAInstallPromptProps> = ({
       <div className="fixed bottom-16 md:bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:w-96 z-40 p-4 rounded-2xl bg-zinc-900 border border-zinc-800 shadow-2xl space-y-3 text-zinc-100 animate-in fade-in slide-in-from-bottom-4">
         <div className="flex items-start justify-between gap-2">
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl bg-amber-500 text-zinc-950 flex items-center justify-center font-black text-lg shadow-sm">
-              Q
-            </div>
+            <img src="/icon.svg" alt="BENGKEL-Q" className="w-10 h-10 rounded-xl shadow-md border border-white/20 shrink-0 object-cover" />
             <div>
               <h4 className="text-sm font-extrabold text-white">
                 Pasang BENGKEL-Q di Perangkat

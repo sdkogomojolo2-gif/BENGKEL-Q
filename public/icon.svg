@@ -1,45 +1,75 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
   <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#059669"/>
-      <stop offset="100%" stop-color="#047857"/>
+    <!-- Royal Blue Background Gradient -->
+    <linearGradient id="bgBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e40af"/>
+      <stop offset="55%" stop-color="#1e3a8a"/>
+      <stop offset="100%" stop-color="#0f172a"/>
     </linearGradient>
-    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#34d399"/>
-      <stop offset="100%" stop-color="#10b981"/>
+    <!-- Racing Red Gradient -->
+    <linearGradient id="racingRed" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ef4444"/>
+      <stop offset="100%" stop-color="#b91c1c"/>
+    </linearGradient>
+    <!-- Crisp White / Silver Metallic Gradient -->
+    <linearGradient id="steelWhite" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#e2e8f0"/>
     </linearGradient>
   </defs>
-  <!-- Background with safe padding for maskable -->
-  <rect width="512" height="512" rx="108" fill="url(#bg)"/>
-  
-  <!-- Cash Register / POS Stylized Icon -->
-  <g transform="translate(80, 80) scale(0.6875)">
-    <!-- Base / Cash Drawer -->
-    <rect x="30" y="320" width="452" height="130" rx="24" fill="#064e3b" stroke="#34d399" stroke-width="12"/>
-    <!-- Drawer Lock & Handle -->
-    <circle cx="256" cy="385" r="16" fill="#fbbf24"/>
-    <rect x="180" y="380" width="152" height="10" rx="5" fill="#34d399" opacity="0.6"/>
 
-    <!-- Main Register Body -->
-    <path d="M70 320 L110 130 C114 110 132 96 152 96 L360 96 C380 96 398 110 402 130 L442 320 Z" fill="#0f172a" stroke="#34d399" stroke-width="12"/>
+  <!-- Main Rounded Squircle Background (Deep Royal Blue) -->
+  <rect width="512" height="512" rx="112" fill="url(#bgBlue)"/>
 
-    <!-- Screen / Display -->
-    <rect x="120" y="125" width="272" height="105" rx="18" fill="#064e3b" stroke="#34d399" stroke-width="6"/>
-    <rect x="128" y="133" width="256" height="89" rx="14" fill="#10b981"/>
-    <text x="256" y="175" font-family="Plus Jakarta Sans, system-ui, -apple-system, sans-serif" font-size="34" font-weight="900" fill="#064e3b" text-anchor="middle" letter-spacing="1">Kasir-Q</text>
-    <text x="256" y="202" font-family="JetBrains Mono, monospace" font-size="16" font-weight="700" fill="#047857" text-anchor="middle">POS &amp; TOKO</text>
+  <!-- Dynamic Red & White Automotive Racing Diagonal Accent -->
+  <path d="M0 140 L140 0 L215 0 L0 215 Z" fill="url(#racingRed)"/>
+  <path d="M0 215 L215 0 L245 0 L0 245 Z" fill="#ffffff" opacity="0.95"/>
+  <path d="M512 372 L372 512 L297 512 L512 297 Z" fill="url(#racingRed)"/>
+  <path d="M512 297 L297 512 L267 512 L512 267 Z" fill="#ffffff" opacity="0.95"/>
 
-    <!-- Keypad Buttons -->
-    <circle cx="160" cy="270" r="14" fill="#34d399"/>
-    <circle cx="208" cy="270" r="14" fill="#34d399"/>
-    <circle cx="256" cy="270" r="14" fill="#34d399"/>
-    <circle cx="304" cy="270" r="14" fill="#34d399"/>
-    <circle cx="352" cy="270" r="14" fill="#f59e0b"/>
+  <!-- Outer Crisp White & Red Border Ring -->
+  <rect x="20" y="20" width="472" height="472" rx="96" fill="none" stroke="#ffffff" stroke-width="6" opacity="0.25"/>
 
-    <!-- Receipt Paper Coming Out from Top -->
-    <path d="M200 96 L200 30 L220 45 L240 30 L260 45 L280 30 L300 45 L312 30 L312 96 Z" fill="#f8fafc" stroke="#e2e8f0" stroke-width="6"/>
-    <!-- Lines on Receipt -->
-    <line x1="216" y1="56" x2="296" y2="56" stroke="#94a3b8" stroke-width="4" stroke-linecap="round"/>
-    <line x1="216" y1="72" x2="276" y2="72" stroke="#94a3b8" stroke-width="4" stroke-linecap="round"/>
+  <!-- Central Mechanical Gear (Roda Gigi Bengkel - White) -->
+  <g transform="translate(256, 232)">
+    <!-- 8 Gear Teeth -->
+    <g fill="url(#steelWhite)">
+      <rect x="-26" y="-148" width="52" height="296" rx="12"/>
+      <rect x="-26" y="-148" width="52" height="296" rx="12" transform="rotate(45)"/>
+      <rect x="-26" y="-148" width="52" height="296" rx="12" transform="rotate(90)"/>
+      <rect x="-26" y="-148" width="52" height="296" rx="12" transform="rotate(135)"/>
+    </g>
+    <!-- Gear Outer Body -->
+    <circle cx="0" cy="0" r="118" fill="url(#steelWhite)" stroke="#1e3a8a" stroke-width="8"/>
+    <!-- Gear Red Inner Ring -->
+    <circle cx="0" cy="0" r="88" fill="url(#racingRed)" stroke="#ffffff" stroke-width="6"/>
+    <!-- Gear Navy Core -->
+    <circle cx="0" cy="0" r="56" fill="#172554"/>
+
+    <!-- Crossed Workshop Wrenches (Kunci Pas Bengkel Silang) -->
+    <!-- Wrench 1 (-45 deg) -->
+    <g transform="rotate(-45)">
+      <rect x="-16" y="-115" width="32" height="230" rx="14" fill="#ffffff" stroke="#1e3a8a" stroke-width="6"/>
+      <circle cx="0" cy="-115" r="38" fill="#ffffff" stroke="#1e3a8a" stroke-width="6"/>
+      <path d="M-16 -155 L-16 -110 L16 -110 L16 -155 Z" fill="#1e3a8a"/>
+      <circle cx="0" cy="115" r="34" fill="#ffffff" stroke="#1e3a8a" stroke-width="6"/>
+      <circle cx="0" cy="115" r="15" fill="#dc2626"/>
+    </g>
+
+    <!-- Wrench 2 (+45 deg) -->
+    <g transform="rotate(45)">
+      <rect x="-16" y="-115" width="32" height="230" rx="14" fill="#ffffff" stroke="#1e3a8a" stroke-width="6"/>
+      <circle cx="0" cy="-115" r="38" fill="#ffffff" stroke="#1e3a8a" stroke-width="6"/>
+      <path d="M-16 -155 L-16 -110 L16 -110 L16 -155 Z" fill="#1e3a8a"/>
+      <circle cx="0" cy="115" r="34" fill="#ffffff" stroke="#1e3a8a" stroke-width="6"/>
+      <circle cx="0" cy="115" r="15" fill="#1d4ed8"/>
+    </g>
+
+    <!-- Center Bolt Accent -->
+    <circle cx="0" cy="0" r="20" fill="url(#racingRed)" stroke="#ffffff" stroke-width="5"/>
   </g>
+
+  <!-- Bottom Name Plate Badge: BENGKEL-Q -->
+  <rect x="66" y="388" width="380" height="76" rx="22" fill="url(#racingRed)" stroke="#ffffff" stroke-width="6"/>
+  <text x="256" y="438" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="44" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="2">BENGKEL-Q</text>
 </svg>
