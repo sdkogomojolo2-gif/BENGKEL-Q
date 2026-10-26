@@ -561,289 +561,375 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
   return (
     <div
       id="receipt-modal-backdrop"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md overflow-y-auto"
+      className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-950/80 backdrop-blur-md"
     >
       <div
         id="receipt-modal-card"
-        className={`w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden border my-8 flex flex-col ${
+        className={`w-full max-w-lg max-h-[92vh] rounded-2xl shadow-2xl overflow-hidden border flex flex-col ${
           darkMode
             ? 'bg-slate-900 border-slate-800 text-slate-100'
             : 'bg-white border-slate-200 text-slate-800'
         }`}
       >
-        {/* Header Notification Banner - Official Agent Theme */}
-        <div className="bg-zinc-950 px-6 py-4 text-white flex items-center justify-between border-b border-amber-500/30 shadow-md">
+        {/* Pinned Top Header Banner */}
+        <div className="shrink-0 bg-gradient-to-r from-slate-950 via-blue-950 to-red-950 px-4 sm:px-5 py-3.5 text-white flex items-center justify-between border-b border-blue-800/50 shadow-md">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center font-bold">
-              <CheckCircle2 className="w-5 h-5 text-amber-400" />
+            <div className="w-9 h-9 rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 flex items-center justify-center font-bold shrink-0">
+              <CheckCircle2 className="w-5 h-5 text-emerald-400" />
             </div>
             <div>
               <h3 className="font-black text-sm tracking-tight text-white flex items-center gap-2">
                 Transaksi Berhasil &amp; Tercatat
               </h3>
-              <p className="text-xs text-amber-400 font-mono font-bold">Faktur #{transaction.invoiceNumber} • {transaction.branchName || 'Kasir Agen'}</p>
+              <p className="text-xs text-amber-300 font-mono font-bold">
+                Faktur #{transaction.invoiceNumber} • {transaction.branchName || 'Bengkel Pusat'}
+              </p>
             </div>
           </div>
           <button
             id="btn-close-receipt"
+            type="button"
             onClick={onClose}
-            className="p-1.5 rounded-lg opacity-80 hover:opacity-100 hover:bg-white/10 transition-colors cursor-pointer text-zinc-300"
+            title="Tutup Struk"
+            className="p-1.5 rounded-lg bg-white/10 hover:bg-red-600 text-white transition-colors cursor-pointer shrink-0"
           >
             <X className="w-5 h-5 text-white" />
           </button>
         </div>
 
-        {/* Printable Thermal Receipt Card */}
-        <div className="p-5 flex justify-center bg-slate-100 dark:bg-slate-950">
-          <div
-            ref={receiptRef}
-            id="thermal-receipt-paper"
-            className="bg-white text-slate-900 p-5 rounded-xl shadow-lg font-mono text-xs w-full max-w-[340px] border border-slate-200 select-all"
-          >
-            {/* Store Header */}
-            <div className="text-center pb-2 text-black">
-              <div className="font-black text-sm tracking-tight text-black">{settings.storeName}</div>
-              {transaction.branchName && (
-                <div className="text-[11px] font-black text-zinc-900">{transaction.branchName}</div>
-              )}
-              <div className="text-[11px] text-zinc-900 font-bold">{settings.address}</div>
-              <div className="text-[11px] text-zinc-900 font-bold">Telp/WA: {settings.phone}</div>
-              {settings.agentCode && (
-                <div className="text-[10px] text-black mt-0.5 font-black">
-                  KODE AGEN: {settings.agentCode} {settings.agentTerminalId ? `| TID: ${settings.agentTerminalId}` : ''}
+        {/* Scrollable Middle Area: Full Printable Thermal Receipt + Options */}
+        <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4 bg-slate-100 dark:bg-slate-950">
+          {/* Printable Thermal Receipt Paper */}
+          <div className="flex justify-center">
+            <div
+              ref={receiptRef}
+              id="thermal-receipt-paper"
+              className="bg-white text-slate-900 p-4 sm:p-5 rounded-xl shadow-lg font-mono text-xs w-full max-w-[340px] border border-slate-200 select-all"
+            >
+              {/* Store Header */}
+              <div className="text-center pb-2 text-black space-y-0.5">
+                <div className="font-black text-sm sm:text-base tracking-tight text-black uppercase">
+                  {settings.storeName || 'BENGKEL-Q MOTOR & MOBIL'}
                 </div>
-              )}
-            </div>
-
-            <div className="border-t border-dashed border-zinc-400 my-2.5" />
-
-            {/* Metadata */}
-            <div className="space-y-0.5 text-[11px] text-black font-medium">
-              <div className="flex justify-between">
-                <span className="text-zinc-900 font-bold">No. Faktur:</span>
-                <span className="font-black text-black">#{transaction.invoiceNumber}</span>
+                {settings.tagline && (
+                  <div className="text-[10px] font-bold text-zinc-700">{settings.tagline}</div>
+                )}
+                {transaction.branchName && (
+                  <div className="text-[11px] font-black text-zinc-900">{transaction.branchName}</div>
+                )}
+                <div className="text-[11px] text-zinc-900 font-bold">{settings.address}</div>
+                <div className="text-[11px] text-zinc-900 font-bold">Telp/WA: {settings.phone}</div>
               </div>
-              {transaction.referenceNumber && (
-                <div className="flex justify-between">
-                  <span className="text-zinc-900 font-bold">No. Ref / RRN:</span>
-                  <span className="font-black text-black">{transaction.referenceNumber}</span>
-                </div>
-              )}
-              <div className="flex justify-between">
-                <span className="text-zinc-900 font-bold">Tanggal:</span>
-                <span className="font-bold text-black">{formatDateIndo(transaction.date)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-zinc-900 font-bold">Kasir:</span>
-                <span className="font-bold text-black">{transaction.cashierName}</span>
-              </div>
-              {transaction.vehiclePlate && (
-                <div className="flex justify-between bg-zinc-100 p-1 rounded font-black text-black">
-                  <span>Plat Nomor:</span>
-                  <span className="font-mono tracking-widest">{transaction.vehiclePlate}</span>
-                </div>
-              )}
-              {transaction.mechanicName && (
-                <div className="flex justify-between">
-                  <span className="text-zinc-900 font-bold">Mekanik:</span>
-                  <span className="font-black text-black">{transaction.mechanicName}</span>
-                </div>
-              )}
-              {transaction.vehicleModel && (
-                <div className="flex justify-between">
-                  <span className="text-zinc-900 font-bold">Kendaraan:</span>
-                  <span className="font-bold text-black">{transaction.vehicleModel}</span>
-                </div>
-              )}
-              {transaction.customerName && (
-                <div className="flex justify-between">
-                  <span className="text-zinc-900 font-bold">Pelanggan:</span>
-                  <span className="font-black text-black">{transaction.customerName}</span>
-                </div>
-              )}
-            </div>
 
-            <div className="border-t border-dashed border-zinc-400 my-2.5" />
+              <div className="border-t border-dashed border-zinc-400 my-2.5" />
 
-            {/* Mini ATM / PPOB Special Details if applicable */}
-            {transaction.serviceType && transaction.serviceType !== 'PRODUK_FISIK' && (
-              <div className="space-y-1 py-1 text-[11px] bg-zinc-50 p-2 rounded border border-zinc-300 mb-2 text-black">
-                <div className="font-black text-black uppercase">
-                  {transaction.items[0]?.productName || transaction.serviceType}
+              {/* Metadata */}
+              <div className="space-y-0.5 text-[11px] text-black font-medium">
+                <div className="flex justify-between gap-2">
+                  <span className="text-zinc-900 font-bold shrink-0">No. Faktur:</span>
+                  <span className="font-black text-black text-right">#{transaction.invoiceNumber}</span>
                 </div>
-                {transaction.destinationBank && (
-                  <div className="flex justify-between">
-                    <span className="text-zinc-900 font-bold">Bank Tujuan:</span>
-                    <span className="font-black text-black">{transaction.destinationBank}</span>
+                <div className="flex justify-between gap-2">
+                  <span className="text-zinc-900 font-bold shrink-0">Tanggal:</span>
+                  <span className="font-bold text-black text-right">{formatDateIndo(transaction.date)}</span>
+                </div>
+                <div className="flex justify-between gap-2">
+                  <span className="text-zinc-900 font-bold shrink-0">Kasir:</span>
+                  <span className="font-bold text-black text-right">{transaction.cashierName}</span>
+                </div>
+                {(transaction.vehiclePlate || transaction.licensePlate) && (
+                  <div className="flex justify-between bg-zinc-100 px-1.5 py-1 rounded font-black text-black my-0.5">
+                    <span>Plat Nomor:</span>
+                    <span className="font-mono tracking-widest">
+                      {transaction.vehiclePlate || transaction.licensePlate}
+                    </span>
                   </div>
                 )}
-                {transaction.accountNumber && (
-                  <div className="flex justify-between">
-                    <span className="text-zinc-900 font-bold">No. Rek / ID:</span>
-                    <span className="font-black text-black">{transaction.accountNumber}</span>
+                {transaction.vehicleModel && (
+                  <div className="flex justify-between gap-2">
+                    <span className="text-zinc-900 font-bold shrink-0">Kendaraan:</span>
+                    <span className="font-bold text-black text-right">{transaction.vehicleModel}</span>
                   </div>
                 )}
-                {transaction.accountName && (
-                  <div className="flex justify-between">
-                    <span className="text-zinc-900 font-bold">Nama Penerima:</span>
-                    <span className="font-black text-black">{transaction.accountName}</span>
+                {transaction.odometerKm && (
+                  <div className="flex justify-between gap-2">
+                    <span className="text-zinc-900 font-bold shrink-0">Kilometer:</span>
+                    <span className="font-bold text-black text-right">
+                      {transaction.odometerKm.toLocaleString('id-ID')} KM
+                    </span>
+                  </div>
+                )}
+                {transaction.mechanicName && (
+                  <div className="flex justify-between gap-2">
+                    <span className="text-zinc-900 font-bold shrink-0">Mekanik:</span>
+                    <span className="font-black text-black text-right">{transaction.mechanicName}</span>
+                  </div>
+                )}
+                {transaction.customerName && (
+                  <div className="flex justify-between gap-2">
+                    <span className="text-zinc-900 font-bold shrink-0">Pelanggan:</span>
+                    <span className="font-black text-black text-right">{transaction.customerName}</span>
                   </div>
                 )}
                 {transaction.customerPhone && (
-                  <div className="flex justify-between">
-                    <span className="text-zinc-900 font-bold">No. HP:</span>
-                    <span className="font-black text-black">{transaction.customerPhone}</span>
+                  <div className="flex justify-between gap-2">
+                    <span className="text-zinc-900 font-bold shrink-0">No. HP/WA:</span>
+                    <span className="font-bold text-black text-right">{transaction.customerPhone}</span>
                   </div>
                 )}
-                {transaction.snNumber && (
-                  <div className="flex items-center justify-between text-[10px] gap-1">
-                    <span className="text-zinc-900 font-bold">Serial No (SN):</span>
-                    <div className="flex items-center gap-1.5">
-                      <span className="font-black text-black">{transaction.snNumber}</span>
-                      <button
-                        type="button"
-                        data-html2canvas-ignore="true"
-                        onClick={() => handleCopyText(transaction.snNumber!, 'SN')}
-                        className="px-1.5 py-0.5 rounded bg-zinc-200 hover:bg-zinc-300 text-zinc-950 font-bold text-[9px] flex items-center gap-1 cursor-pointer transition-colors"
-                        title="Salin SN"
-                      >
-                        {copiedField === 'SN' ? (
-                          <>
-                            <Check className="w-2.5 h-2.5 text-emerald-600" />
-                            <span className="text-emerald-700">Tersalin</span>
-                          </>
-                        ) : (
-                          <>
-                            <Copy className="w-2.5 h-2.5" />
-                            <span>Salin</span>
-                          </>
-                        )}
-                      </button>
-                    </div>
-                  </div>
-                )}
-                {transaction.tokenCode && (
-                  <div className="my-1.5 p-2 bg-white border-2 border-zinc-950 rounded-lg text-center shadow-xs">
-                    <div className="flex items-center justify-between text-[9px] text-black font-black uppercase mb-1">
-                      <span>KODE TOKEN PLN PRABAYAR</span>
-                      <button
-                        type="button"
-                        data-html2canvas-ignore="true"
-                        onClick={() => handleCopyText(transaction.tokenCode!, 'TOKEN')}
-                        className="px-2 py-0.5 rounded bg-amber-500 hover:bg-amber-400 text-zinc-950 text-[9px] font-black flex items-center gap-1 cursor-pointer shadow-xs transition-colors"
-                      >
-                        {copiedField === 'TOKEN' ? (
-                          <>
-                            <Check className="w-2.5 h-2.5" />
-                            <span>Tersalin!</span>
-                          </>
-                        ) : (
-                          <>
-                            <Copy className="w-2.5 h-2.5" />
-                            <span>Salin 20 Digit</span>
-                          </>
-                        )}
-                      </button>
-                    </div>
-                    <div className="text-sm sm:text-base font-black tracking-widest text-black font-mono my-1 bg-amber-50/50 py-1 rounded border border-amber-200">
-                      {transaction.tokenCode}
-                    </div>
-                    <div className="text-[8px] text-zinc-900 font-bold">Masukkan 20 digit ke meteran listrik pelanggan</div>
+                {transaction.complaint && (
+                  <div className="pt-0.5 text-[10px] text-zinc-800">
+                    <span className="font-bold">Keluhan/Catatan: </span>
+                    <span>{transaction.complaint}</span>
                   </div>
                 )}
               </div>
-            )}
 
-            {/* Items Table */}
-            <div className="space-y-1.5 py-1 text-[11px] text-black">
-              {transaction.items.map((item, idx) => (
-                <div key={idx} className="space-y-0.5">
-                  <div className="flex items-center justify-between font-black text-black">
-                    <span className="flex items-center gap-1">
-                      <span className={`text-[9px] px-1 py-0.2 rounded font-mono ${
-                        item.itemType === 'JASA'
-                          ? 'bg-blue-100 text-blue-800'
-                          : 'bg-zinc-200 text-zinc-800'
-                      }`}>
-                        {item.itemType === 'JASA' ? 'JASA' : 'PART'}
+              <div className="border-t border-dashed border-zinc-400 my-2.5" />
+
+              {/* Items Table */}
+              <div className="space-y-2 py-1 text-[11px] text-black">
+                {transaction.items.map((item, idx) => (
+                  <div key={idx} className="space-y-0.5">
+                    <div className="flex items-start justify-between font-black text-black">
+                      <span className="flex items-start gap-1.5">
+                        <span
+                          className={`text-[9px] px-1.5 py-0.5 rounded font-mono shrink-0 mt-0.5 ${
+                            item.itemType === 'JASA'
+                              ? 'bg-blue-100 text-blue-800'
+                              : 'bg-zinc-200 text-zinc-800'
+                          }`}
+                        >
+                          {item.itemType === 'JASA' ? 'JASA' : 'PART'}
+                        </span>
+                        <span className="leading-snug">{item.productName}</span>
                       </span>
-                      <span>{item.productName}</span>
-                    </span>
+                    </div>
+                    <div className="flex justify-between text-zinc-900 font-bold pl-1">
+                      <span>
+                        {item.quantity} {item.unit || (item.itemType === 'JASA' ? 'jasa' : 'pcs')} x{' '}
+                        {formatRupiah(item.sellPrice)}
+                      </span>
+                      <span className="font-black text-black">{formatRupiah(item.subtotal)}</span>
+                    </div>
                   </div>
-                  <div className="flex justify-between text-zinc-900 font-bold">
-                    <span>
-                      {item.quantity} {item.unit || (item.itemType === 'JASA' ? 'jasa' : 'pcs')} x {formatRupiah(item.sellPrice)}
-                    </span>
-                    <span className="font-black text-black">{formatRupiah(item.subtotal)}</span>
-                  </div>
+                ))}
+              </div>
+
+              <div className="border-t border-dashed border-zinc-400 my-2.5" />
+
+              {/* Totals & Breakdown */}
+              <div className="space-y-1 text-[11px] text-black">
+                {typeof transaction.sparepartTotal === 'number' &&
+                  typeof transaction.serviceTotal === 'number' && (
+                    <>
+                      <div className="flex justify-between text-zinc-700">
+                        <span>Total Sparepart:</span>
+                        <span className="font-bold">{formatRupiah(transaction.sparepartTotal)}</span>
+                      </div>
+                      <div className="flex justify-between text-zinc-700">
+                        <span>Total Jasa Servis:</span>
+                        <span className="font-bold">{formatRupiah(transaction.serviceTotal)}</span>
+                      </div>
+                    </>
+                  )}
+                <div className="flex justify-between font-bold">
+                  <span className="text-zinc-900">Subtotal:</span>
+                  <span className="font-black text-black">{formatRupiah(transaction.subtotal)}</span>
                 </div>
-              ))}
+                {transaction.discount > 0 && (
+                  <div className="flex justify-between font-black text-rose-700">
+                    <span>Diskon:</span>
+                    <span>-{formatRupiah(transaction.discount)}</span>
+                  </div>
+                )}
+                <div className="flex justify-between font-black text-sm pt-1.5 border-t border-zinc-300">
+                  <span>TOTAL:</span>
+                  <span className="text-black font-black">{formatRupiah(transaction.grandTotal)}</span>
+                </div>
+                <div className="flex justify-between pt-1 font-bold">
+                  <span className="text-zinc-900">Metode:</span>
+                  <span className="font-black uppercase text-black">{transaction.paymentMethod}</span>
+                </div>
+                {transaction.paymentMethod === 'TUNAI' && transaction.cashAmount !== undefined && (
+                  <>
+                    <div className="flex justify-between font-bold">
+                      <span className="text-zinc-900">Tunai:</span>
+                      <span className="font-black text-black">{formatRupiah(transaction.cashAmount)}</span>
+                    </div>
+                    <div className="flex justify-between font-black text-black">
+                      <span className="text-zinc-900">Kembalian:</span>
+                      <span className="font-black text-black">{formatRupiah(transaction.changeAmount || 0)}</span>
+                    </div>
+                  </>
+                )}
+                {transaction.downPayment !== undefined && transaction.remainingDebt !== undefined && (
+                  <>
+                    <div className="flex justify-between font-bold text-amber-800">
+                      <span>Uang Muka (DP):</span>
+                      <span className="font-black">{formatRupiah(transaction.downPayment)}</span>
+                    </div>
+                    <div className="flex justify-between font-black text-rose-700">
+                      <span>Sisa Tempo/Kasbon:</span>
+                      <span>{formatRupiah(transaction.remainingDebt)}</span>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              <div className="border-t border-dashed border-zinc-400 my-3" />
+
+              {/* Footer Thank You Note */}
+              <div className="text-center text-[10px] text-zinc-900 font-bold space-y-1">
+                <p>{settings.footerMessage}</p>
+                <p className="font-black text-black">~ Terima Kasih Atas Kunjungan Anda ~</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Paper Size & WhatsApp Settings inside Scrollable Area */}
+          <div className="max-w-[340px] mx-auto space-y-2.5">
+            {/* Pilihan Ukuran Kertas Thermal 58mm / 80mm */}
+            <div className="flex items-center justify-between p-2 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs shadow-2xs">
+              <span className="font-bold text-zinc-600 dark:text-zinc-400 font-mono text-[11px]">
+                Kertas Printer:
+              </span>
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    settings.paperSize = '58mm';
+                    setPrintMessage({ text: 'Ukuran kertas diatur ke 58mm', type: 'info' });
+                    setTimeout(() => setPrintMessage(null), 2000);
+                  }}
+                  className={`px-2.5 py-1 rounded-lg font-mono font-bold text-[11px] cursor-pointer transition-all ${
+                    settings.paperSize !== '80mm'
+                      ? 'bg-blue-600 text-white font-black shadow-xs'
+                      : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'
+                  }`}
+                >
+                  58mm
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    settings.paperSize = '80mm';
+                    setPrintMessage({ text: 'Ukuran kertas diatur ke 80mm', type: 'info' });
+                    setTimeout(() => setPrintMessage(null), 2000);
+                  }}
+                  className={`px-2.5 py-1 rounded-lg font-mono font-bold text-[11px] cursor-pointer transition-all ${
+                    settings.paperSize === '80mm'
+                      ? 'bg-blue-600 text-white font-black shadow-xs'
+                      : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'
+                  }`}
+                >
+                  80mm
+                </button>
+              </div>
             </div>
 
-            <div className="border-t border-dashed border-zinc-400 my-2.5" />
-
-            {/* Totals & Breakdown */}
-            <div className="space-y-1 text-[11px] text-black">
-              {typeof transaction.sparepartTotal === 'number' && typeof transaction.serviceTotal === 'number' && (
-                <>
-                  <div className="flex justify-between text-zinc-700">
-                    <span>Total Sparepart:</span>
-                    <span className="font-bold">{formatRupiah(transaction.sparepartTotal)}</span>
-                  </div>
-                  <div className="flex justify-between text-zinc-700">
-                    <span>Total Jasa Servis:</span>
-                    <span className="font-bold">{formatRupiah(transaction.serviceTotal)}</span>
-                  </div>
-                </>
-              )}
-              <div className="flex justify-between font-bold">
-                <span className="text-zinc-900">Subtotal:</span>
-                <span className="font-black text-black">{formatRupiah(transaction.subtotal)}</span>
-              </div>
-              {transaction.discount > 0 && (
-                <div className="flex justify-between font-black text-rose-700">
-                  <span>Diskon:</span>
-                  <span>-{formatRupiah(transaction.discount)}</span>
-                </div>
-              )}
-              <div className="flex justify-between font-black text-sm pt-1.5 border-t border-zinc-300">
-                <span>TOTAL:</span>
-                <span className="text-black font-black">{formatRupiah(transaction.grandTotal)}</span>
-              </div>
-              <div className="flex justify-between pt-1 font-bold">
-                <span className="text-zinc-900">Metode:</span>
-                <span className="font-black uppercase text-black">{transaction.paymentMethod}</span>
-              </div>
-              {transaction.paymentMethod === 'TUNAI' && transaction.cashAmount && (
-                <>
-                  <div className="flex justify-between font-bold">
-                    <span className="text-zinc-900">Tunai:</span>
-                    <span className="font-black text-black">{formatRupiah(transaction.cashAmount)}</span>
-                  </div>
-                  <div className="flex justify-between font-black text-black">
-                    <span className="text-zinc-900">Kembalian:</span>
-                    <span className="font-black text-black">{formatRupiah(transaction.changeAmount || 0)}</span>
-                  </div>
-                </>
+            {/* Input WhatsApp Number Tujuan */}
+            <div className="flex items-center gap-2 p-2 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs shadow-2xs">
+              <span className="font-bold text-zinc-600 dark:text-zinc-400 shrink-0 font-mono text-[11px]">
+                WA Pelanggan:
+              </span>
+              <input
+                type="tel"
+                placeholder="Contoh: 08123456789"
+                value={customPhoneInput}
+                onChange={(e) => setCustomPhoneInput(e.target.value)}
+                className="flex-1 bg-transparent text-zinc-950 dark:text-zinc-100 font-mono font-bold outline-hidden px-1 placeholder:text-zinc-400 placeholder:font-normal text-xs"
+              />
+              {customPhoneInput && (
+                <button
+                  type="button"
+                  onClick={() => setCustomPhoneInput('')}
+                  className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 text-xs font-bold px-1"
+                  title="Hapus nomor"
+                >
+                  ✕
+                </button>
               )}
             </div>
 
-            <div className="border-t border-dashed border-zinc-400 my-3" />
+            {/* Secondary Quick Options: Kirim Foto Struk & Unduh PDF */}
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                id="btn-receipt-wa-photo"
+                type="button"
+                onClick={handleShareWAPhoto}
+                disabled={isGeneratingImage}
+                className="py-2 px-2.5 bg-white dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-zinc-300 dark:border-zinc-800 font-bold text-[11px] rounded-xl flex items-center justify-center gap-1.5 active:scale-95 transition-all cursor-pointer shadow-2xs"
+                title="Kirim gambar struk format PNG ke WhatsApp"
+              >
+                <ImageIcon className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                <span>Foto Struk (.PNG)</span>
+              </button>
+              <button
+                id="btn-receipt-pdf"
+                type="button"
+                onClick={handleDownloadPDF}
+                className="py-2 px-2.5 border border-zinc-300 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 font-bold text-[11px] rounded-xl flex items-center justify-center gap-1.5 transition-colors active:scale-95 cursor-pointer text-zinc-800 dark:text-zinc-200 shadow-2xs"
+              >
+                <FileDown className="w-3.5 h-3.5 text-blue-500 shrink-0" />
+                <span>Unduh PDF</span>
+              </button>
+            </div>
 
-            {/* Footer Thank You Note */}
-            <div className="text-center text-[10px] text-zinc-900 font-bold space-y-1">
-              <p>{settings.footerMessage}</p>
-              <p className="font-black text-black">~ Terima Kasih Atas Kunjungan Anda ~</p>
+            {/* Toggle for Advanced Options (Bluetooth connect, RawBT, Tab Baru) */}
+            <div>
+              <button
+                type="button"
+                onClick={() => setShowAdvancedOptions(!showAdvancedOptions)}
+                className="text-[11px] text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 font-medium underline text-center w-full cursor-pointer py-1"
+              >
+                {showAdvancedOptions
+                  ? '▲ Sembunyikan Opsi Printer Lainnya'
+                  : '▼ Opsi Printer Lainnya (Bluetooth Manual / RawBT)'}
+              </button>
+
+              {showAdvancedOptions && (
+                <div className="mt-1.5 p-3 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-2 text-xs">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={handlePrintBluetoothManual}
+                      className="p-2 rounded-lg bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 font-medium flex items-center justify-center gap-1.5 cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-700"
+                    >
+                      <Bluetooth className="w-3.5 h-3.5 text-blue-500" />
+                      <span>Pindai Bluetooth</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleRawBTPrint}
+                      className="p-2 rounded-lg bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 font-medium flex items-center justify-center gap-1.5 cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-700"
+                    >
+                      <Printer className="w-3.5 h-3.5 text-amber-500" />
+                      <span>Cetak via RawBT</span>
+                    </button>
+                  </div>
+                  {isIframeEnvironment() && (
+                    <button
+                      type="button"
+                      onClick={() => openAppInNewTab()}
+                      className="w-full p-2 rounded-lg bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 font-medium flex items-center justify-center gap-1.5 cursor-pointer hover:bg-zinc-200"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" />
+                      <span>Buka Kasir di Tab Baru (Layar Penuh)</span>
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>
 
-        {/* Action Buttons */}
-        <div className="p-4 bg-slate-50 dark:bg-slate-950/70 border-t border-slate-200 dark:border-slate-800 space-y-2.5">
+        {/* Pinned Bottom Action Bar — Always Visible Without Scrolling */}
+        <div className="shrink-0 p-3 sm:p-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 space-y-2">
           {/* Status Message Notification */}
           {printMessage && (
             <div
-              className={`p-2.5 rounded-xl text-xs font-bold flex items-center gap-2 ${
+              className={`p-2 rounded-xl text-xs font-bold flex items-center gap-2 ${
                 printMessage.type === 'success'
                   ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20'
                   : printMessage.type === 'error'
@@ -862,179 +948,38 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
             </div>
           )}
 
-          {/* PROMPT 4: PILIHAN UKURAN KERTAS THERMAL 58mm / 80mm */}
-          <div className="flex items-center justify-between p-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs">
-            <span className="font-bold text-zinc-600 dark:text-zinc-400 font-mono">Ukuran Kertas Thermal:</span>
-            <div className="flex items-center gap-1">
-              <button
-                type="button"
-                onClick={() => {
-                  settings.paperSize = '58mm';
-                  setPrintMessage({ text: 'Ukuran kertas diatur ke 58mm', type: 'info' });
-                  setTimeout(() => setPrintMessage(null), 2000);
-                }}
-                className={`px-3 py-1 rounded-lg font-mono font-bold text-xs cursor-pointer transition-all ${
-                  settings.paperSize !== '80mm'
-                    ? 'bg-amber-500 text-zinc-950 font-black shadow-xs'
-                    : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'
-                }`}
-              >
-                58mm (Kecil)
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  settings.paperSize = '80mm';
-                  setPrintMessage({ text: 'Ukuran kertas diatur ke 80mm', type: 'info' });
-                  setTimeout(() => setPrintMessage(null), 2000);
-                }}
-                className={`px-3 py-1 rounded-lg font-mono font-bold text-xs cursor-pointer transition-all ${
-                  settings.paperSize === '80mm'
-                    ? 'bg-amber-500 text-zinc-950 font-black shadow-xs'
-                    : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'
-                }`}
-              >
-                80mm (Lebar)
-              </button>
-            </div>
-          </div>
-
-          {/* 1-CLICK UNIVERSAL PRINT BUTTON (PROMPT 4) */}
-          <button
-            id="btn-receipt-smart-print"
-            type="button"
-            onClick={handleSmartPrint}
-            disabled={isPrinting}
-            className="w-full py-3.5 px-4 bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-zinc-950 font-black text-sm sm:text-base rounded-xl flex items-center justify-center gap-2.5 shadow-lg shadow-amber-500/20 active:scale-98 transition-all cursor-pointer"
-          >
-            {isPrinting ? (
-              <>
-                <Loader2 className="w-5 h-5 animate-spin" />
-                <span>Sedang Mencetak Struk Thermal...</span>
-              </>
-            ) : (
-              <>
-                <Printer className="w-5 h-5" />
-                <span>CETAK STRUK THERMAL BLUETOOTH ({settings.paperSize || '58mm'})</span>
-                {btStatus.isConnected && (
-                  <span className="ml-1 px-2 py-0.5 text-[10px] font-bold bg-zinc-950/20 rounded-full text-zinc-950">
-                    Terhubung
-                  </span>
-                )}
-              </>
-            )}
-          </button>
-
-          {/* Input WhatsApp Number Tujuan */}
-          <div className="flex items-center gap-2 p-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs">
-            <span className="font-bold text-zinc-600 dark:text-zinc-400 shrink-0 font-mono">No. WhatsApp Pelanggan:</span>
-            <input
-              type="tel"
-              placeholder="Contoh: 08123456789"
-              value={customPhoneInput}
-              onChange={(e) => setCustomPhoneInput(e.target.value)}
-              className="flex-1 bg-transparent text-zinc-950 dark:text-zinc-100 font-mono font-bold outline-hidden px-1 placeholder:text-zinc-400 placeholder:font-normal text-sm"
-            />
-            {customPhoneInput && (
-              <button
-                type="button"
-                onClick={() => setCustomPhoneInput('')}
-                className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 text-xs font-bold px-1"
-                title="Hapus nomor"
-              >
-                ✕
-              </button>
-            )}
-          </div>
-
-          {/* PROMPT 4: TOMBOL KIRIM NOTA WHATSAPP (TEKS RAPI FORMAT WA.ME) */}
-          <button
-            id="btn-receipt-wa-text"
-            type="button"
-            onClick={handleShareWAText}
-            className="w-full py-3.5 px-4 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-black text-sm sm:text-base rounded-xl flex items-center justify-center gap-2.5 shadow-md shadow-emerald-600/25 active:scale-98 transition-all cursor-pointer"
-          >
-            <MessageCircle className="w-5 h-5" />
-            <span>KIRIM NOTA WHATSAPP (TEKS RAPI)</span>
-          </button>
-
-          {/* Secondary Quick Options: Kirim Foto Struk & Unduh PDF */}
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {/* 1-CLICK UNIVERSAL PRINT BUTTON */}
             <button
-              id="btn-receipt-wa-photo"
+              id="btn-receipt-smart-print"
               type="button"
-              onClick={handleShareWAPhoto}
-              disabled={isGeneratingImage}
-              className="py-2.5 px-3 bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-zinc-300 dark:border-zinc-800 font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 active:scale-95 transition-all cursor-pointer"
-              title="Kirim gambar struk format PNG ke WhatsApp"
+              onClick={handleSmartPrint}
+              disabled={isPrinting}
+              className="w-full py-2.5 px-3 bg-blue-700 hover:bg-blue-600 active:bg-blue-800 text-white font-black text-xs sm:text-sm rounded-xl flex items-center justify-center gap-2 shadow-md shadow-blue-700/20 active:scale-98 transition-all cursor-pointer"
             >
-              <ImageIcon className="w-3.5 h-3.5 text-emerald-500" />
-              <span>Kirim Foto Struk (.PNG)</span>
-            </button>
-            <button
-              id="btn-receipt-pdf"
-              type="button"
-              onClick={handleDownloadPDF}
-              className="py-2.5 px-3 border border-zinc-300 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-colors active:scale-95 cursor-pointer text-zinc-800 dark:text-zinc-200"
-            >
-              <FileDown className="w-3.5 h-3.5 text-blue-500" />
-              <span>Unduh File PDF</span>
-            </button>
-          </div>
-
-          {/* Toggle for Advanced Options (Bluetooth connect, RawBT, Tab Baru, Teks WA) */}
-          <div className="pt-1">
-            <button
-              type="button"
-              onClick={() => setShowAdvancedOptions(!showAdvancedOptions)}
-              className="text-[11px] text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 font-medium underline text-center w-full cursor-pointer py-1"
-            >
-              {showAdvancedOptions ? '▲ Sembunyikan Pilihan Lain' : '▼ Opsi Printer Lainnya (Bluetooth / RawBT / Teks WA)'}
+              {isPrinting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin shrink-0" />
+                  <span>Mencetak...</span>
+                </>
+              ) : (
+                <>
+                  <Printer className="w-4 h-4 shrink-0" />
+                  <span>Cetak Struk ({settings.paperSize || '58mm'})</span>
+                </>
+              )}
             </button>
 
-            {showAdvancedOptions && (
-              <div className="mt-2 p-3 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-2 text-xs">
-                <div className="flex items-center justify-between">
-                  <span className="font-semibold text-zinc-700 dark:text-zinc-300">Pilih Metode Lain:</span>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={handlePrintBluetoothManual}
-                    className="p-2 rounded-lg bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 font-medium flex items-center justify-center gap-1.5 cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-700"
-                  >
-                    <Bluetooth className="w-3.5 h-3.5 text-blue-500" />
-                    <span>Pindai Bluetooth Manual</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleRawBTPrint}
-                    className="p-2 rounded-lg bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 font-medium flex items-center justify-center gap-1.5 cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-700"
-                  >
-                    <Printer className="w-3.5 h-3.5 text-amber-500" />
-                    <span>Cetak via RawBT (HP Android)</span>
-                  </button>
-                </div>
-                <button
-                  type="button"
-                  onClick={handleShareWAText}
-                  className="w-full p-2 rounded-lg bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 font-medium flex items-center justify-center gap-1.5 cursor-pointer hover:bg-zinc-200"
-                >
-                  <Share2 className="w-3.5 h-3.5 text-zinc-500" />
-                  <span>Kirim Format Teks Biasa ke WA (Opsional)</span>
-                </button>
-                {isIframeEnvironment() && (
-                  <button
-                    type="button"
-                    onClick={() => openAppInNewTab()}
-                    className="w-full p-2 rounded-lg bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 font-medium flex items-center justify-center gap-1.5 cursor-pointer hover:bg-zinc-200"
-                  >
-                    <ExternalLink className="w-3.5 h-3.5" />
-                    <span>Buka Kasir di Tab Baru (Untuk Layar Penuh)</span>
-                  </button>
-                )}
-              </div>
-            )}
+            {/* TOMBOL KIRIM NOTA WHATSAPP */}
+            <button
+              id="btn-receipt-wa-text"
+              type="button"
+              onClick={handleShareWAText}
+              className="w-full py-2.5 px-3 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-black text-xs sm:text-sm rounded-xl flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20 active:scale-98 transition-all cursor-pointer"
+            >
+              <MessageCircle className="w-4 h-4 shrink-0" />
+              <span>Kirim Nota WhatsApp</span>
+            </button>
           </div>
 
           {/* Selesai & Transaksi Baru */}
@@ -1045,9 +990,9 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
               onClose();
               onNewTransaction();
             }}
-            className="w-full py-3 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-white font-bold text-sm rounded-xl flex items-center justify-center gap-2 transition-all shadow-md active:scale-98 tracking-wide cursor-pointer"
+            className="w-full py-2.5 bg-red-600 hover:bg-red-500 text-white font-black text-xs sm:text-sm rounded-xl flex items-center justify-center gap-2 transition-all shadow-md shadow-red-600/20 active:scale-98 tracking-wide cursor-pointer"
           >
-            <RefreshCw className="w-4 h-4 text-amber-400" />
+            <RefreshCw className="w-4 h-4" />
             <span>Selesai &amp; Transaksi Baru</span>
           </button>
         </div>
