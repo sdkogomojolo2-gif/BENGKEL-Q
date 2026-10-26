@@ -2263,10 +2263,10 @@ class LocalEncryptedDatabase {
   public exportJsonBackup(): string {
     const data = this.load();
     const backupObj = {
-      app: 'KasirKelontong POS Modern',
+      app: 'BENGKEL-Q POS Bengkel Motor & Mobil',
       version: data.version || 1,
       exportedAt: new Date().toISOString(),
-      storeName: data.settings?.storeName || 'Toko Kelontong',
+      storeName: data.settings?.storeName || 'BENGKEL-Q MOTOR & MOBIL',
       summary: {
         totalProducts: data.products?.length || 0,
         totalTransactions: data.transactions?.length || 0,
@@ -2296,7 +2296,7 @@ class LocalEncryptedDatabase {
     const payload = JSON.stringify({
       schema: data,
       exportedAt: new Date().toISOString(),
-      app: 'KasirKelontong POS',
+      app: 'BENGKEL-Q POS',
       encryption: 'AES-256',
     });
     const key = customPassword || this.getVaultKey();
@@ -2549,7 +2549,7 @@ class LocalEncryptedDatabase {
         balanceBefore: oldDigi,
         balanceAfter: branch.digiposBalance,
         category: 'LAINNYA',
-        description: `Penyesuaian Saldo Riil Pulsa oleh Admin (${meta.reason || 'Koreksi Saldo Nyata'})`,
+        description: `Penyesuaian Saldo Riil Deposit Supplier oleh Admin (${meta.reason || 'Koreksi Saldo Nyata'})`,
         cashierName: meta.adminName,
       });
     }

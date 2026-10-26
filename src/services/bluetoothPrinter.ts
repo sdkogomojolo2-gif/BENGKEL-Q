@@ -266,14 +266,14 @@ class BluetoothThermalPrinter {
     addBytes(CMD.ALIGN_CENTER);
     addBytes(CMD.TEXT_DOUBLE);
     addBytes(CMD.BOLD_ON);
-    addLine(settings.storeName || 'TOKO KELONTONG');
+    addLine(settings.storeName || 'BENGKEL-Q MOTOR & MOBIL');
 
     addBytes(CMD.TEXT_NORMAL);
     addBytes(CMD.BOLD_OFF);
     if (settings.tagline) {
       addLine(settings.tagline);
     }
-    addLine(settings.address || 'Jl. Toko Kelontong');
+    addLine(settings.address || 'Jl. Raya Otomotif No. 88');
     addLine(`Telp/WA: ${settings.phone || '-'}`);
     addLine(separator);
 

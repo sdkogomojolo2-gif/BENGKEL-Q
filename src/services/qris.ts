@@ -22,7 +22,7 @@ function calculateCRC16(str: string): string {
 }
 
 export function generateDynamicQRIS({
-  merchantName = 'TOKO KELONTONG BERKAH',
+  merchantName = 'BENGKEL-Q MOTOR & MOBIL',
   merchantCity = 'JAKARTA',
   nmid = 'ID1020038920192',
   amount,

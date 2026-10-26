@@ -490,7 +490,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `Cadangan_KasirKelontong_Lengkap_${new Date().toISOString().slice(0, 10)}.json`;
+      a.download = `Cadangan_BengkelQ_Lengkap_${new Date().toISOString().slice(0, 10)}.json`;
       a.click();
       URL.revokeObjectURL(url);
       sound.playSuccess();
@@ -509,7 +509,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `Backup_KasirKelontong_AES256_${new Date().toISOString().slice(0, 10)}.enc`;
+      a.download = `Backup_BengkelQ_AES256_${new Date().toISOString().slice(0, 10)}.enc`;
       a.click();
       URL.revokeObjectURL(url);
       sound.playSuccess();
@@ -740,26 +740,26 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-black text-zinc-950 dark:text-zinc-200 mb-1">
-                    Nama Toko / Agen: <span className="text-rose-500">*</span>
+                    Nama Bengkel: <span className="text-rose-500">*</span>
                   </label>
                   <input
                     type="text"
                     value={storeForm.storeName}
                     onChange={(e) => setStoreForm({ ...storeForm, storeName: e.target.value })}
-                    placeholder="Contoh: Agen Mini ATM & Konter Berkah"
+                    placeholder="Contoh: BENGKEL-Q MOTOR & MOBIL"
                     className="w-full px-3 py-2.5 rounded-xl border text-xs font-black bg-white dark:bg-zinc-950 border-zinc-300 dark:border-zinc-800 text-zinc-950 dark:text-white placeholder-zinc-400 focus:outline-hidden focus:border-amber-500 shadow-2xs"
                     required
                   />
                 </div>
                 <div>
                   <label className="block text-xs font-black text-zinc-950 dark:text-zinc-200 mb-1">
-                    Nama Pemilik / Penanggung Jawab:
+                    Nama Pemilik / Kepala Mekanik:
                   </label>
                   <input
                     type="text"
                     value={storeForm.ownerName || ''}
                     onChange={(e) => setStoreForm({ ...storeForm, ownerName: e.target.value })}
-                    placeholder="Contoh: Pak Haji Budi"
+                    placeholder="Contoh: Pak Budi Santoso"
                     className="w-full px-3 py-2.5 rounded-xl border text-xs font-black bg-white dark:bg-zinc-950 border-zinc-300 dark:border-zinc-800 text-zinc-950 dark:text-white placeholder-zinc-400 focus:outline-hidden focus:border-amber-500 shadow-2xs"
                   />
                 </div>
@@ -767,13 +767,13 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
               <div>
                 <label className="block text-xs font-black text-zinc-950 dark:text-zinc-200 mb-1">
-                  Slogan / Tagline Toko:
+                  Slogan / Layanan Utama Bengkel:
                 </label>
                 <input
                   type="text"
                   value={storeForm.tagline}
                   onChange={(e) => setStoreForm({ ...storeForm, tagline: e.target.value })}
-                  placeholder="Contoh: Tarik Tunai, Transfer Bank, Pulsa, E-Wallet & Bayar Tagihan"
+                  placeholder="Contoh: Servis Berkala, Tune Up, Ganti Oli, Ban & Suku Cadang Asli"
                   className="w-full px-3 py-2.5 rounded-xl border text-xs font-bold bg-white dark:bg-zinc-950 border-zinc-300 dark:border-zinc-800 text-zinc-950 dark:text-white placeholder-zinc-400 focus:outline-hidden focus:border-amber-500 shadow-2xs"
                 />
               </div>
@@ -1116,7 +1116,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                         type="text"
                         value={storeForm.qrisMerchantName || ''}
                         onChange={(e) => setStoreForm({ ...storeForm, qrisMerchantName: e.target.value })}
-                        placeholder="Contoh: AGEN MINI ATM & KONTER BERKAH"
+                        placeholder="Contoh: BENGKEL-Q MOTOR & MOBIL"
                         className="w-full px-3 py-2.5 rounded-xl border text-xs font-black uppercase bg-white dark:bg-zinc-950 border-zinc-300 dark:border-zinc-800 text-zinc-950 dark:text-white placeholder-zinc-400 focus:outline-hidden focus:border-purple-500 shadow-2xs"
                       />
                       <span className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-1 block font-medium">
@@ -1435,25 +1435,25 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     Bersihkan Riwayat Transaksi Saja
                   </button>
 
-                  {/* Optional Load Sample Products */}
+                  {/* Optional Load Sample Bengkel Products */}
                   <button
                     type="button"
                     onClick={() => {
-                      if (confirm('Muat katalog layanan Mini ATM (Tarik/Setor/Transfer Bank), Pulsa, Paket Data, Top-up E-Wallet, Token Listrik, & PPOB sebagai sampel?')) {
+                      if (confirm('Muat katalog sampel Sparepart, Oli Mesin, Ban, Kampas Rem, Aki & Jasa Servis Bengkel?')) {
                         if (onLoadSampleData) {
                           onLoadSampleData();
                         } else {
-                          db.loadSampleMiniAtmProducts();
+                          db.loadSampleBengkelProducts();
                           onRestoreCompleted();
                         }
                         sound.playSuccess();
-                        alert('Katalog sampel layanan Mini ATM & Konter Pulsa berhasil dimuat!');
+                        alert('Katalog sampel Sparepart, Oli & Jasa Servis Bengkel berhasil dimuat!');
                       }
                     }}
                     className="px-3.5 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700 font-bold text-xs rounded-xl cursor-pointer transition-all active:scale-95 flex items-center gap-1.5"
                   >
                     <RefreshCw className="w-3.5 h-3.5 text-zinc-400" />
-                    <span>Muat Contoh Layanan Mini ATM &amp; Pulsa (Demo)</span>
+                    <span>Muat Contoh Data Sparepart &amp; Jasa Servis (Demo)</span>
                   </button>
                 </div>
               </div>
@@ -1673,7 +1673,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   </button>
                 </div>
                 <p className="text-[11px] text-zinc-400 leading-relaxed">
-                  Dengan fitur ini, Anda <strong>cukup memelihara 1 master aplikasi kasir tunggal</strong>. Saat menjual ke Toko A, Toko B, atau Agen Mini ATM lain, Anda <em>tidak perlu repot ganti kodingan, build ulang, atau sewa banyak hosting</em>. Cukup masukkan konfigurasi Firebase milik toko di bawah ini, klik <strong>Tes &amp; Sambungkan</strong>, dan database toko langsung terpisah secara mandiri!
+                  Dengan fitur ini, Anda <strong>cukup memelihara 1 master aplikasi kasir bengkel tunggal</strong>. Saat menjual ke Bengkel A, Bengkel B, atau Cabang Bengkel lain, Anda <em>tidak perlu repot ganti kodingan, build ulang, atau sewa banyak hosting</em>. Cukup masukkan konfigurasi Firebase milik bengkel di bawah ini, klik <strong>Tes &amp; Sambungkan</strong>, dan database bengkel langsung terpisah secara mandiri!
                 </p>
 
                 {/* Collapsible Step-by-Step Guide for Firebase Console */}
@@ -1686,7 +1686,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                       <div className="p-3 rounded-xl bg-zinc-900/90 border border-zinc-800 space-y-1">
                         <div className="text-amber-400 font-black text-xs">1. Buat Proyek</div>
                         <p className="text-[11px] text-zinc-400 leading-snug">
-                          Buka <a href="https://console.firebase.google.com" target="_blank" rel="noreferrer" className="text-amber-400 underline inline-flex items-center gap-0.5">console.firebase.google.com <ExternalLink className="w-3 h-3" /></a> dengan akun Google. Klik <strong>Add Project</strong> (misal: <em>sembako-barokah</em>).
+                          Buka <a href="https://console.firebase.google.com" target="_blank" rel="noreferrer" className="text-amber-400 underline inline-flex items-center gap-0.5">console.firebase.google.com <ExternalLink className="w-3 h-3" /></a> dengan akun Google. Klik <strong>Add Project</strong> (misal: <em>bengkel-jaya-motor</em>).
                         </p>
                       </div>
                       <div className="p-3 rounded-xl bg-zinc-900/90 border border-zinc-800 space-y-1">
@@ -1723,7 +1723,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     rows={4}
                     value={firebaseSnippetInput}
                     onChange={(e) => handleSnippetPaste(e.target.value)}
-                    placeholder={`Tempel teks konfigurasi dari Firebase Console di sini...\nContoh:\nconst firebaseConfig = {\n  apiKey: "AIzaSyD-example...",\n  projectId: "toko-barokah",\n  appId: "1:1055880338253:web:28c3..."\n};`}
+                    placeholder={`Tempel teks konfigurasi dari Firebase Console di sini...\nContoh:\nconst firebaseConfig = {\n  apiKey: "AIzaSyD-example...",\n  projectId: "bengkel-jaya-motor",\n  appId: "1:1055880338253:web:28c3..."\n};`}
                     className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-[11px] font-mono text-zinc-300 placeholder-zinc-500 focus:outline-hidden focus:border-purple-500"
                   />
                   <span className="text-[10px] text-zinc-500 block leading-tight">
@@ -1737,10 +1737,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 <div className="flex items-center justify-between border-b border-zinc-800/80 pb-2">
                   <h4 className="font-black text-xs text-white flex items-center gap-2">
                     <Server className="w-4 h-4 text-amber-400" />
-                    <span>Rincian Konfigurasi Database Toko Ini:</span>
+                    <span>Rincian Konfigurasi Database Bengkel Ini:</span>
                   </h4>
                   <span className="text-[10px] text-zinc-400 font-mono">
-                    Tersimpan di Penyimpanan Lokal Perangkat Toko (LocalStorage)
+                    Tersimpan di Penyimpanan Lokal Perangkat Bengkel (LocalStorage)
                   </span>
                 </div>
 
@@ -1753,7 +1753,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                       type="text"
                       value={fbProjectId}
                       onChange={(e) => setFbProjectId(e.target.value.trim())}
-                      placeholder="Contoh: sembako-barokah-app"
+                      placeholder="Contoh: bengkel-jaya-motor"
                       className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-amber-400 font-mono font-bold placeholder-zinc-500 focus:outline-hidden focus:border-amber-500"
                       required
                     />
@@ -1867,7 +1867,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                       className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-zinc-950 font-black text-xs flex items-center gap-2 shadow-lg cursor-pointer transition-all active:scale-95"
                     >
                       <Check className="w-4 h-4" />
-                      <span>💾 Simpan &amp; Sambungkan Database Toko</span>
+                      <span>💾 Simpan &amp; Sambungkan Database Bengkel</span>
                     </button>
                   </div>
                 </div>
@@ -1878,7 +1878,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 <div className="flex items-center justify-between">
                   <h4 className="font-bold text-xs text-white flex items-center gap-2">
                     <Key className="w-4 h-4 text-amber-400" />
-                    <span>Kode Lisensi Toko / Sub-Folder Cloud:</span>
+                    <span>Kode Lisensi Bengkel / Sub-Folder Cloud:</span>
                   </h4>
                   <span className="text-[10px] text-zinc-500 font-mono">Multi-Tenant Store ID</span>
                 </div>
@@ -1892,11 +1892,11 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                         storeId: e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, '_'),
                       })
                     }
-                    placeholder="Contoh: toko_barokah_01"
+                    placeholder="Contoh: bengkel_jaya_01"
                     className="w-full px-3 py-2.5 rounded-xl border text-xs font-mono font-bold bg-zinc-900 border-zinc-800 text-amber-400 focus:outline-hidden focus:border-amber-500"
                   />
                   <p className="text-[11px] text-zinc-400 leading-relaxed">
-                    Kode ini memastikan database terorganisir per toko (misal: <code className="text-amber-400">toko_barokah_01</code>, <code className="text-amber-400">konter_cell_02</code>).
+                    Kode ini memastikan database terorganisir per bengkel (misal: <code className="text-amber-400">bengkel_jaya_01</code>, <code className="text-amber-400">bengkel_cabang_02</code>).
                   </p>
                 </div>
 

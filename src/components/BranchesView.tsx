@@ -293,10 +293,10 @@ export const BranchesView: React.FC<BranchesViewProps> = ({
         }
       );
     } else if (mutationType === 'TOPUP_SERVER') {
-      // Top up saldo pulsa dari bank: Bank -amount, Digipos +amount
+      // Setor deposit supplier sparepart dari bank: Bank -amount, Deposit +amount
       if ((branch.bankBalance || 0) < mutationAmount) {
         sound.playError();
-        alert(`Saldo bank di cabang ${branch.name} tidak cukup (${formatRupiah(branch.bankBalance || 0)}) untuk top up saldo server`);
+        alert(`Saldo bank di cabang ${branch.name} tidak cukup (${formatRupiah(branch.bankBalance || 0)}) untuk setor deposit supplier`);
         return;
       }
       onRecordMutation(
@@ -304,7 +304,7 @@ export const BranchesView: React.FC<BranchesViewProps> = ({
         { bankChange: -mutationAmount, digiposChange: mutationAmount },
         {
           category: 'TOPUP_SERVER',
-          description: mutationDescription || `Top Up Saldo Server Pulsa/Digipos dari Bank (${formatRupiah(mutationAmount)})`,
+          description: mutationDescription || `Setor Deposit Supplier Sparepart dari Bank (${formatRupiah(mutationAmount)})`,
           cashierName,
         }
       );
@@ -386,7 +386,7 @@ export const BranchesView: React.FC<BranchesViewProps> = ({
       No: idx + 1,
       Tanggal: formatDateIndo(m.date),
       Cabang: m.branchName || m.branchId,
-      'Jenis Saldo': m.type === 'CASH' ? 'Kas Tunai Laci' : m.type === 'BANK' ? 'Saldo Rekening Bank' : 'Saldo Pulsa Digipos',
+      'Jenis Saldo': m.type === 'CASH' ? 'Kas Tunai Laci' : m.type === 'BANK' ? 'Saldo Rekening Bank' : 'Deposit Supplier Part',
       Arus: m.flow === 'IN' ? 'MASUK' : 'KELUAR',
       Nominal: m.amount,
       'Saldo Sebelum': m.balanceBefore,
@@ -460,8 +460,8 @@ export const BranchesView: React.FC<BranchesViewProps> = ({
           </h2>
           <p className="text-xs sm:text-sm text-zinc-300 mt-1 max-w-2xl font-medium">
             {isCashier
-              ? 'Pantau uang tunai fisik di laci kas, saldo rekening bank/EDC, dan saldo server pulsa cabang Anda.'
-              : 'Pantau uang tunai fisik di laci kas, saldo rekening bank/EDC, dan saldo server pulsa & e-wallet seluruh cabang.'}
+              ? 'Pantau uang tunai fisik di laci kasir, saldo rekening bank/QRIS, dan deposit supplier sparepart cabang Anda.'
+              : 'Pantau uang tunai fisik di laci kasir, saldo rekening bank/QRIS, dan deposit supplier sparepart seluruh cabang bengkel.'}
           </p>
         </div>
 
@@ -470,7 +470,7 @@ export const BranchesView: React.FC<BranchesViewProps> = ({
             type="button"
             onClick={() => handleOpenAdjustRealModal()}
             className="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-black text-xs shadow-md flex items-center gap-2 transition-all cursor-pointer active:scale-95"
-            title="Atur & Sesuaikan Saldo Riil Kas, Bank & Pulsa Toko (Khusus Pemilik/Admin)"
+            title="Atur & Sesuaikan Saldo Riil Kas, Bank & Deposit Supplier Bengkel (Khusus Pemilik/Admin)"
           >
             <ShieldCheck className="w-4 h-4 text-zinc-950" />
             <span>⚙️ Atur Saldo Riil (Khusus Admin)</span>
@@ -526,30 +526,30 @@ export const BranchesView: React.FC<BranchesViewProps> = ({
             {formatRupiah(totals.totalBank)}
           </div>
           <p className="text-[11px] text-zinc-400 mt-1">
-            {isCashier ? 'Saldo rekening bank operasional cabang Anda' : 'Saldo rekening bank / EDC operasional agen'}
+            {isCashier ? 'Saldo rekening bank operasional cabang Anda' : 'Saldo rekening bank / QRIS operasional bengkel'}
           </p>
         </div>
 
-        {/* Total Saldo Pulsa & Digipos */}
+        {/* Total Deposit Supplier & Kas Cadangan */}
         <div className="p-4 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-xs relative overflow-hidden">
           <div className="flex items-center justify-between text-xs font-bold text-zinc-500 dark:text-zinc-400 mb-2">
-            <span>{isCashier ? 'SALDO SERVER PULSA CABANG' : 'SALDO DIGIPOS & PULSA'}</span>
+            <span>{isCashier ? 'DEPOSIT SUPPLIER CABANG' : 'DEPOSIT SUPPLIER & PART'}</span>
             <div className="w-8 h-8 rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold">
-              📱
+              📦
             </div>
           </div>
           <div className="text-xl sm:text-2xl font-black font-mono text-purple-600 dark:text-purple-400">
             {formatRupiah(totals.totalDigipos)}
           </div>
           <p className="text-[11px] text-zinc-400 mt-1">
-            {isCashier ? 'Saldo server pulsa cabang Anda' : 'Saldo server pulsa, kuota & PPOB'}
+            {isCashier ? 'Deposit kulakan sparepart cabang Anda' : 'Deposit supplier oli, ban & suku cadang'}
           </p>
         </div>
 
         {/* Grand Total Asset Modal */}
         <div className="p-4 rounded-2xl bg-amber-500 text-zinc-950 shadow-md relative overflow-hidden">
           <div className="flex items-center justify-between text-xs font-extrabold text-zinc-900 mb-2">
-            <span>{isCashier ? 'TOTAL LIKUIDITAS CABANG' : 'TOTAL LIKUIDITAS AGEN'}</span>
+            <span>{isCashier ? 'TOTAL LIKUIDITAS CABANG' : 'TOTAL LIKUIDITAS BENGKEL'}</span>
             <div className="w-8 h-8 rounded-lg bg-zinc-950/20 text-zinc-950 flex items-center justify-center font-bold">
               💰
             </div>
@@ -558,7 +558,7 @@ export const BranchesView: React.FC<BranchesViewProps> = ({
             {formatRupiah(totals.grandLiquidity)}
           </div>
           <p className="text-[11px] text-zinc-800 font-semibold mt-1">
-            {isCashier ? 'Total aset kas + bank + pulsa cabang Anda' : 'Total aset kas + bank + pulsa gabungan'}
+            {isCashier ? 'Total aset kas + bank + deposit cabang Anda' : 'Total aset kas + bank + deposit gabungan'}
           </p>
         </div>
       </div>
@@ -688,7 +688,7 @@ export const BranchesView: React.FC<BranchesViewProps> = ({
 
                     <div className="flex items-center justify-between text-xs">
                       <span className="text-zinc-500 dark:text-zinc-400 flex items-center gap-1">
-                        <span>📱</span> Saldo Server Pulsa:
+                        <span>📦</span> Deposit Supplier Part:
                       </span>
                       <span className="font-mono font-bold text-purple-600 dark:text-purple-400">
                         {formatRupiah(branch.digiposBalance || 0)}
@@ -824,8 +824,8 @@ export const BranchesView: React.FC<BranchesViewProps> = ({
           >
             <option value="ALL">Semua Tipe Akun Saldo</option>
             <option value="CASH">💵 Uang Kas Laci Tunai</option>
-            <option value="BANK">🏦 Saldo Rekening Bank / EDC</option>
-            <option value="DIGIPOS">📱 Saldo Server Pulsa & Digipos</option>
+            <option value="BANK">🏦 Saldo Rekening Bank / QRIS</option>
+            <option value="DIGIPOS">📦 Deposit Supplier &amp; Kas Part</option>
           </select>
         </div>
 
@@ -874,7 +874,7 @@ export const BranchesView: React.FC<BranchesViewProps> = ({
                               : 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20'
                           }`}
                         >
-                          {m.type === 'CASH' ? '💵 KAS LACI' : m.type === 'BANK' ? '🏦 BANK EDC' : '📱 DIGIPOS'}
+                          {m.type === 'CASH' ? '💵 KAS LACI' : m.type === 'BANK' ? '🏦 BANK QRIS' : '📦 DEPOSIT PART'}
                         </span>
                       </td>
                       <td className="py-2.5 px-3 whitespace-nowrap font-bold">
@@ -1008,7 +1008,7 @@ export const BranchesView: React.FC<BranchesViewProps> = ({
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] text-zinc-500">Saldo Pulsa</label>
+                      <label className="block text-[10px] text-zinc-500">Deposit Part</label>
                       <input
                         type="number"
                         value={branchFormData.digiposBalance}
@@ -1132,7 +1132,7 @@ export const BranchesView: React.FC<BranchesViewProps> = ({
                     type="button"
                     onClick={() => {
                       setMutationType('TOPUP_SERVER');
-                      setMutationDescription('Top Up Saldo Server Pulsa/Digipos dari Rekening Bank');
+                      setMutationDescription('Setor Deposit Supplier Sparepart dari Rekening Bank');
                     }}
                     className={`p-2.5 rounded-xl border text-left cursor-pointer transition-all ${
                       mutationType === 'TOPUP_SERVER'
@@ -1141,9 +1141,9 @@ export const BranchesView: React.FC<BranchesViewProps> = ({
                     }`}
                   >
                     <div className="font-extrabold flex items-center gap-1">
-                      <span>🏦 ➔ 📱</span> Top Up Server Pulsa
+                      <span>🏦 ➔ 📦</span> Setor Deposit Supplier
                     </div>
-                    <div className="text-[10px] text-zinc-500 mt-0.5">Bank (-), Digipos (+)</div>
+                    <div className="text-[10px] text-zinc-500 mt-0.5">Bank (-), Deposit Part (+)</div>
                   </button>
 
                   <button
@@ -1211,8 +1211,8 @@ export const BranchesView: React.FC<BranchesViewProps> = ({
                     className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100"
                   >
                     <option value="CASH">💵 Kas Laci Tunai</option>
-                    <option value="BANK">🏦 Saldo Rekening Bank / EDC</option>
-                    <option value="DIGIPOS">📱 Saldo Server Pulsa & Digipos</option>
+                    <option value="BANK">🏦 Saldo Rekening Bank / QRIS</option>
+                    <option value="DIGIPOS">📦 Deposit Supplier &amp; Kas Part</option>
                   </select>
                 </div>
               )}

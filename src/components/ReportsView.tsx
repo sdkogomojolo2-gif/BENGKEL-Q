@@ -78,7 +78,17 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
 
       let matchService = true;
       if (serviceFilter !== 'ALL') {
-        if (serviceFilter === 'PULSA') matchService = trx.serviceType === 'PULSA' || trx.serviceType === 'PAKET_DATA';
+        const isServiceTrx = Boolean(
+          trx.licensePlate ||
+          trx.mechanicName ||
+          trx.items.some(
+            (i) =>
+              i.category.toLowerCase().includes('jasa') ||
+              i.serviceType === 'JASA_SERVIS'
+          )
+        );
+        if (serviceFilter === 'SERVIS_KENDARAAN') matchService = isServiceTrx;
+        else if (serviceFilter === 'SPAREPART') matchService = !isServiceTrx;
         else matchService = trx.serviceType === serviceFilter;
       }
 
@@ -87,8 +97,9 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
         !q ||
         trx.invoiceNumber.toLowerCase().includes(q) ||
         (trx.referenceNumber && trx.referenceNumber.toLowerCase().includes(q)) ||
-        (trx.destinationBank && trx.destinationBank.toLowerCase().includes(q)) ||
-        (trx.accountNumber && trx.accountNumber.toLowerCase().includes(q)) ||
+        (trx.licensePlate && trx.licensePlate.toLowerCase().includes(q)) ||
+        (trx.vehicleModel && trx.vehicleModel.toLowerCase().includes(q)) ||
+        (trx.mechanicName && trx.mechanicName.toLowerCase().includes(q)) ||
         (trx.customerPhone && trx.customerPhone.toLowerCase().includes(q)) ||
         trx.cashierName.toLowerCase().includes(q) ||
         (trx.customerName && trx.customerName.toLowerCase().includes(q)) ||
@@ -506,7 +517,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Cari faktur, rek, hp..."
+                placeholder="Cari faktur, plat nomor, mekanik, pelanggan..."
                 className="w-full pl-8 pr-3 py-1.5 rounded-lg border text-xs bg-white dark:bg-zinc-950 border-zinc-300 dark:border-zinc-800 focus:outline-none focus:ring-2 focus:ring-amber-500 text-zinc-800 dark:text-zinc-100"
               />
             </div>
@@ -537,15 +548,9 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
               onChange={(e) => setServiceFilter(e.target.value)}
               className="px-2.5 py-1.5 rounded-lg border text-xs bg-white dark:bg-zinc-950 border-zinc-300 dark:border-zinc-800 font-semibold focus:outline-none focus:ring-2 focus:ring-amber-500 text-zinc-800 dark:text-zinc-100"
             >
-              <option value="ALL">Semua Layanan</option>
-              <option value="TARIK_TUNAI">💳 Tarik Tunai</option>
-              <option value="SETOR_TUNAI">📥 Setor Tunai</option>
-              <option value="TRANSFER_BANK">🔁 Transfer Bank</option>
-              <option value="PULSA">📱 Pulsa &amp; Data</option>
-              <option value="TOPUP_EWALLET">👛 Top Up E-Wallet</option>
-              <option value="TOKEN_PLN">⚡ Token PLN</option>
-              <option value="TAGIHAN_PPOB">🧾 Tagihan PPOB</option>
-              <option value="PRODUK_FISIK">📦 Produk Fisik</option>
+              <option value="ALL">Semua Jenis Transaksi</option>
+              <option value="SERVIS_KENDARAAN">🔧 Servis Kendaraan (Plat &amp; Mekanik)</option>
+              <option value="SPAREPART">🔩 Penjualan Sparepart &amp; Oli Eceran</option>
             </select>
 
             <select
@@ -567,18 +572,19 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
             <thead className="bg-zinc-50 dark:bg-zinc-950/70 text-zinc-500 dark:text-zinc-400 border-b border-zinc-200 dark:border-zinc-800 uppercase tracking-wider font-bold font-mono text-[10px]">
               <tr>
                 <th className="px-4 py-3.5">Faktur &amp; Ref</th>
-                <th className="px-4 py-3.5 font-sans">Cabang &amp; Layanan</th>
-                <th className="px-4 py-3.5 font-sans">Detail Rek / HP / Token</th>
+                <th className="px-4 py-3.5 font-sans">Cabang &amp; Rincian Item</th>
+                <th className="px-4 py-3.5 font-sans">Kendaraan / Mekanik / Pelanggan</th>
                 <th className="px-4 py-3.5">Metode</th>
                 <th className="px-4 py-3.5 text-right">Total Bayar</th>
-                <th className="px-4 py-3.5 text-right">Laba Admin</th>
+                <th className="px-4 py-3.5 text-right">Laba Kotor</th>
+                <th className="px-4 py-3.5 text-center font-sans">Status</th>
                 <th className="px-4 py-3.5 text-center font-sans">Aksi Struk</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/60 font-medium">
               {filteredTransactions.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-4 py-8 text-center text-zinc-400">
+                  <td colSpan={8} className="px-4 py-8 text-center text-zinc-400">
                     Tidak ada transaksi yang cocok dengan filter.
                   </td>
                 </tr>
@@ -595,28 +601,32 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
                       )}
                     </td>
                     <td className="px-4 py-3 text-zinc-800 dark:text-zinc-200">
-                      <div className="font-extrabold text-xs">{trx.items[0]?.productName || 'Transaksi'}</div>
+                      <div className="font-extrabold text-xs">
+                        {trx.items[0]?.productName || 'Transaksi Bengkel'}
+                        {trx.items.length > 1 ? ` (+${trx.items.length - 1} item)` : ''}
+                      </div>
                       <div className="text-[10px] text-zinc-400 font-mono">
-                        {trx.branchName || 'Cabang'} • {formatDateIndo(trx.date).split(' ')[1]} {formatDateIndo(trx.date).split(' ')[2]} • Kasir: {trx.cashierName}
+                        {trx.branchName || 'Bengkel Pusat'} • {formatDateIndo(trx.date).split(' ')[1]} {formatDateIndo(trx.date).split(' ')[2]} • Kasir: {trx.cashierName}
                       </div>
                     </td>
                     <td className="px-4 py-3 font-mono text-[11px] text-zinc-600 dark:text-zinc-400">
-                      {trx.accountNumber && (
+                      {trx.licensePlate && (
                         <div className="text-zinc-800 dark:text-zinc-200 font-bold">
-                          {trx.destinationBank || ''} {trx.accountNumber}
+                          🚗 {trx.licensePlate} {trx.vehicleModel ? `(${trx.vehicleModel})` : ''}
                         </div>
                       )}
-                      {trx.customerPhone && (
-                        <div>No: {trx.customerPhone}</div>
+                      {trx.mechanicName && (
+                        <div className="text-[10px] text-blue-600 dark:text-blue-400 font-semibold">
+                          🔧 Mekanik: {trx.mechanicName}
+                        </div>
                       )}
-                      {trx.tokenCode && (
-                        <div className="text-amber-500 font-black text-[10px]">{trx.tokenCode}</div>
+                      {(trx.customerName || trx.customerPhone) && (
+                        <div className="text-[10px] text-zinc-500">
+                          👤 {trx.customerName || '-'} {trx.customerPhone ? `(${trx.customerPhone})` : ''}
+                        </div>
                       )}
-                      {trx.snNumber && (
-                        <div className="text-[10px] text-emerald-500">{trx.snNumber}</div>
-                      )}
-                      {!trx.accountNumber && !trx.customerPhone && !trx.tokenCode && !trx.snNumber && (
-                        <span className="text-zinc-400">-</span>
+                      {!trx.licensePlate && !trx.mechanicName && !trx.customerName && !trx.customerPhone && (
+                        <span className="text-zinc-400">Penjualan Langsung</span>
                       )}
                     </td>
                     <td className="px-4 py-3">

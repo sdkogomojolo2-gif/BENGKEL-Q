@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   BookOpen,
   Search,
@@ -9,33 +9,22 @@ import {
   Settings,
   Printer,
   Clock,
-  ShieldCheck,
   Smartphone,
   HelpCircle,
-  CheckCircle2,
-  AlertTriangle,
   ChevronRight,
   ExternalLink,
-  Laptop,
-  ArrowRight,
-  Zap,
   Sparkles,
-  Layers,
-  RotateCcw,
   Share2,
-  FileText,
-  DollarSign,
-  QrCode,
-  Sliders,
-  Check,
   Keyboard,
   Wrench,
   Users,
   Car,
-  UserPlus,
-  Edit2,
-  Trash2,
   Wallet,
+  LayoutDashboard,
+  Building2,
+  ArrowRight,
+  CheckCircle2,
+  Layers,
 } from 'lucide-react';
 import { openAppInNewTab, isIframeEnvironment } from '../services/bluetoothPrinter';
 
@@ -46,7 +35,34 @@ interface GuideViewProps {
   onOpenBrochure?: () => void;
 }
 
-type GuideCategory = 'all' | 'workflow' | 'service' | 'sparepart' | 'mechanic' | 'printer' | 'shortcuts' | 'faq';
+type GuideCategory =
+  | 'all'
+  | 'nav-all'
+  | 'workflow'
+  | 'kasir-group'
+  | 'gudang-group'
+  | 'kas-group'
+  | 'laporan-group'
+  | 'printer'
+  | 'shortcuts'
+  | 'faq';
+
+interface NavMenuGuideItem {
+  id: string;
+  tabKey: string;
+  number: number;
+  title: string;
+  groupBadge: string;
+  groupColor: 'red' | 'blue' | 'emerald' | 'amber' | 'purple';
+  category: GuideCategory;
+  icon: React.FC<{ className?: string }>;
+  summary: string;
+  purpose: string;
+  steps: string[];
+  features: { label: string; desc: string }[];
+  actionLabel: string;
+  isSettingsModal?: boolean;
+}
 
 export const GuideView: React.FC<GuideViewProps> = ({
   darkMode,
@@ -55,55 +71,533 @@ export const GuideView: React.FC<GuideViewProps> = ({
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<GuideCategory>('all');
-  const [expandedSection, setExpandedSection] = useState<string | null>('daily-flow');
+  const [expandedSection, setExpandedSection] = useState<string | null>('nav-1-dashboard');
 
   const toggleSection = (id: string) => {
     setExpandedSection(expandedSection === id ? null : id);
   };
 
   const categories = [
-    { id: 'all' as GuideCategory, label: 'Semua Panduan', icon: BookOpen },
-    { id: 'workflow' as GuideCategory, label: 'Alur Kasir Bengkel Harian', icon: Clock },
-    { id: 'service' as GuideCategory, label: 'Kasir Servis Kendaraan', icon: Wrench },
-    { id: 'sparepart' as GuideCategory, label: 'Kasir Sparepart & Stok Oli', icon: Package },
-    { id: 'mechanic' as GuideCategory, label: 'Data & Komisi Mekanik', icon: Users },
-    { id: 'printer' as GuideCategory, label: 'Printer Thermal & Nota WA', icon: Printer },
-    { id: 'shortcuts' as GuideCategory, label: 'Tombol & Shortcut F1-F9', icon: Keyboard },
-    { id: 'faq' as GuideCategory, label: 'Solusi Masalah (FAQ)', icon: HelpCircle },
+    { id: 'all' as GuideCategory, label: 'Semua Panduan (Lengkap)', icon: BookOpen },
+    { id: 'nav-all' as GuideCategory, label: '12 Menu Navigasi A-Z', icon: Layers },
+    { id: 'kasir-group' as GuideCategory, label: 'Grup Kasir & Transaksi', icon: Wrench },
+    { id: 'gudang-group' as GuideCategory, label: 'Grup Gudang & Mekanik', icon: Package },
+    { id: 'kas-group' as GuideCategory, label: 'Grup Kas & Piutang', icon: Wallet },
+    { id: 'laporan-group' as GuideCategory, label: 'Grup Laporan & Sistem', icon: BarChart3 },
+    { id: 'workflow' as GuideCategory, label: 'SOP Harian Kasir', icon: Clock },
+    { id: 'printer' as GuideCategory, label: 'Printer Thermal & WA', icon: Printer },
+    { id: 'shortcuts' as GuideCategory, label: 'Tombol Cepat F1-F9', icon: Keyboard },
+    { id: 'faq' as GuideCategory, label: 'Tanya Jawab (FAQ)', icon: HelpCircle },
   ];
+
+  // Complete 12 Navigation Menus Guide matching Sidebar & TopHeader Dropdowns
+  const navMenuGuides: NavMenuGuideItem[] = useMemo(
+    () => [
+      {
+        id: 'nav-1-dashboard',
+        tabKey: 'dashboard',
+        number: 1,
+        title: 'Menu 1: Ringkasan & Laba (Dashboard Utama)',
+        groupBadge: 'MENU UTAMA (BERANDA)',
+        groupColor: 'red',
+        category: 'laporan-group',
+        icon: LayoutDashboard,
+        summary:
+          'Pusat kendali utama untuk memantau omset kotor, HPP modal sparepart, komisi mekanik, biaya operasional, hingga Laba Bersih Riil bengkel secara real-time.',
+        purpose:
+          'Digunakan oleh Pemilik Bengkel maupun Kasir untuk melihat performa keuangan harian/bulanan dalam sekali pandang serta mengakses tombol pintas transaksi.',
+        steps: [
+          'Klik menu "Ringkasan & Laba" di bagian paling atas navigasi samping atau pilih dari dropdown navigasi atas.',
+          'Pilih rentang waktu analisis di pojok kanan atas: Hari Ini, 7 Hari Terakhir, 30 Hari Terakhir, atau Semua Waktu.',
+          'Pantau 4 Kartu Utama: Total Omset Kotor, HPP Modal Sparepart, Komisi Mekanik + Pengeluaran Operasional, serta Laba Bersih Bengkel.',
+          'Gunakan tombol cepat "+ Catat Servis Kendaraan" untuk langsung membuka formulir servis baru, atau "+ Jual Sparepart" untuk masuk ke kasir suku cadang.',
+        ],
+        features: [
+          {
+            label: 'Rumus Laba Bersih Otomatis',
+            desc: 'Menghitung Omset Kotor dikurangi Modal Beli Sparepart (HPP), dikurangi Komisi Jasa Mekanik, dan dikurangi Kas Keluar Operasional.',
+          },
+          {
+            label: 'Grafik Tren Pendapatan & Servis',
+            desc: 'Visualisasi grafik perbandingan pendapatan jasa servis vs penjualan sparepart harian.',
+          },
+          {
+            label: 'Peringatan Stok Menipis & Piutang',
+            desc: 'Menampilkan daftar oli/suku cadang yang hampir habis serta ringkasan kasbon pelanggan yang belum lunas.',
+          },
+        ],
+        actionLabel: 'Buka Menu Ringkasan & Laba',
+      },
+      {
+        id: 'nav-2-cashier-service',
+        tabKey: 'cashier-service',
+        number: 2,
+        title: 'Menu 2: Kasir Servis (Pencatatan Servis Kendaraan & Mekanik)',
+        groupBadge: 'DROPDOWN 1: KASIR & TRANSAKSI',
+        groupColor: 'red',
+        category: 'kasir-group',
+        icon: Wrench,
+        summary:
+          'Halaman khusus untuk mencatat pengerjaan servis motor/mobil lengkap dengan Plat Nomor, Tipe Kendaraan, Mekanik, Jasa Servis, serta Grafik & Riwayat Servis.',
+        purpose:
+          'Digunakan setiap kali ada kendaraan pelanggan masuk untuk servis rutin, tune up, ganti oli + jasa, bongkar CVT, turun mesin, maupun perbaikan kelistrikan.',
+        steps: [
+          'Buka dropdown "Kasir & Transaksi" lalu pilih "Kasir Servis".',
+          'Klik tombol merah/biru "+ Servis Kendaraan Baru (Plat & Mekanik)" atau tekan tombol pintas keyboard [F3].',
+          'Isi Nomor Polisi / Plat Kendaraan (contoh: B 1234 XYZ), Tipe Motor/Mobil (contoh: Vario 160 / Avanza), Kilometer Odometer, dan Keluhan Pelanggan.',
+          'Pilih Nama Mekanik yang menangani kendaraan tersebut dari daftar mekanik bengkel.',
+          'Tambahkan rincian Jasa Servis yang dikerjakan (contoh: Jasa Servis CVT, Tune Up) dan pilih Sparepart/Oli yang ikut diganti jika ada.',
+          'Pilih metode pembayaran (Tunai, QRIS, Transfer Bank, atau Tempo/Kasbon), lalu klik Proses & Cetak Struk Servis.',
+        ],
+        features: [
+          {
+            label: 'Grafik Jasa Servis Terpopuler',
+            desc: 'Menampilkan diagram statistik jenis jasa servis apa saja yang paling sering dikerjakan di bengkel.',
+          },
+          {
+            label: 'Grafik Produktivitas Mekanik',
+            desc: 'Memantau siapa mekanik yang paling banyak menangani unit kendaraan beserta kontribusi omset jasanya.',
+          },
+          {
+            label: 'Tabel Riwayat Servis & Filter Mekanik',
+            desc: 'Dilengkapi filter per nama mekanik, pencarian plat nomor, tombol Cetak Ulang Nota Servis, dan Kirim Nota WA.',
+          },
+        ],
+        actionLabel: 'Buka Menu Kasir Servis',
+      },
+      {
+        id: 'nav-3-cashier-sparepart',
+        tabKey: 'cashier-sparepart',
+        number: 3,
+        title: 'Menu 3: Kasir Sparepart (Penjualan Langsung Suku Cadang & Oli)',
+        groupBadge: 'DROPDOWN 1: KASIR & TRANSAKSI',
+        groupColor: 'blue',
+        category: 'kasir-group',
+        icon: ShoppingCart,
+        summary:
+          'Mesin kasir Point of Sale (POS) cepat untuk pelanggan yang membeli oli, ban, aki, busi, kampas rem, atau suku cadang eceran tanpa pengerjaan servis.',
+        purpose:
+          'Melayani pembelian suku cadang secara cepat menggunakan pencarian nama barang, filter kategori, maupun scan barcode kemasan produk.',
+        steps: [
+          'Buka dropdown "Kasir & Transaksi" lalu pilih "Kasir Sparepart".',
+          'Ketik nama barang di kolom pencarian [F2] (misal: Yamalube, Kampas Beat, Aki GTZ5S) atau klik tombol Scan Barcode [F4].',
+          'Klik kartu produk untuk memasukkan barang ke Keranjang Belanja di sisi kanan layar.',
+          'Atur jumlah (Qty) barang atau berikan potongan diskon nominal jika diperlukan.',
+          'Jika pelanggan masih memilih barang lain di rak, klik tombol "Antrian [F8]" untuk menyimpan keranjang sementara.',
+          'Klik tombol "Bayar Sekarang [F1]", pilih Tunai / QRIS / Transfer / Tempo, lalu cetak struk belanja.',
+        ],
+        features: [
+          {
+            label: 'Jual Kilat 1-Klik (Quick Sell)',
+            desc: 'Tombol petir pada kartu produk untuk langsung mencatat penjualan 1 barang tunai lunas tanpa perlu lewat keranjang.',
+          },
+          {
+            label: 'Registrasi Cepat Barcode Baru',
+            desc: 'Jika barcode kemasan sparepart belum terdaftar saat di-scan, muncul formulir tambah barang instan.',
+          },
+          {
+            label: 'Tampilan Bersih & Responsif',
+            desc: 'Bebas dari header servis sehingga layar fokus penuh pada katalog sparepart dan keranjang kasir.',
+          },
+        ],
+        actionLabel: 'Buka Menu Kasir Sparepart',
+      },
+      {
+        id: 'nav-4-inventory',
+        tabKey: 'inventory',
+        number: 4,
+        title: 'Menu 4: Stok Sparepart & Oli (Manajemen Gudang & Harga)',
+        groupBadge: 'DROPDOWN 2: GUDANG & MEKANIK',
+        groupColor: 'blue',
+        category: 'gudang-group',
+        icon: Package,
+        summary:
+          'Kelola katalog seluruh suku cadang, oli, dan tarif jasa servis bengkel lengkap dengan Harga Modal (HPP), Harga Jual, Stok Minimum, dan Cetak Label Barcode.',
+        purpose:
+          'Digunakan saat kulakan barang baru datang dari supplier, mengubah harga jual/modal, memeriksa stok kritis yang mau habis, serta mencetak stiker harga rak.',
+        steps: [
+          'Buka dropdown "Gudang & Mekanik" lalu pilih "Stok Sparepart & Oli".',
+          'Gunakan Dropdown Kategori untuk memfilter jenis barang (Oli & Pelumas, Rem & Suspensi, Ban & Velg, Kelistrikan & Aki, Jasa Servis, dll.).',
+          'Gunakan Dropdown Kondisi Stok untuk melihat barang yang "Stok Menipis / Kritis" atau "Stok Habis (0)".',
+          'Klik tombol "+ Tambah Barang / Jasa" untuk mendaftarkan sparepart baru atau tarif jasa servis baru.',
+          'Klik ikon Pensil (Edit) pada baris produk untuk memperbarui jumlah stok kulakan atau menyesuaikan harga.',
+          'Centang beberapa produk lalu klik "Cetak Label / Barcode" untuk mencetak stiker harga rak bengkel.',
+        ],
+        features: [
+          {
+            label: 'Pemisahan Tipe Fisik vs Jasa',
+            desc: 'Item bertipe Jasa Servis otomatis bebas potongan stok, sedangkan Sparepart Fisik otomatis memotong stok gudang saat terjual.',
+          },
+          {
+            label: 'Indikator Warna Stok Kritis',
+            desc: 'Memberikan tanda peringatan merah/kuning jika sisa stok di rak berada di bawah batas minimum.',
+          },
+          {
+            label: 'Ekspor & Impor Data Katalog',
+            desc: 'Mendukung unduh laporan nilai aset stok ke Excel (.xlsx) dan PDF.',
+          },
+        ],
+        actionLabel: 'Buka Menu Stok Sparepart & Oli',
+      },
+      {
+        id: 'nav-5-mechanics',
+        tabKey: 'mechanics',
+        number: 5,
+        title: 'Menu 5: Komisi Mekanik (Kelola Tim Mekanik & Bagi Hasil)',
+        groupBadge: 'DROPDOWN 2: GUDANG & MEKANIK',
+        groupColor: 'red',
+        category: 'gudang-group',
+        icon: Users,
+        summary:
+          'Manajemen daftar mekanik bengkel (Tambah, Edit, Hapus Mekanik) sekaligus perhitungan otomatis komisi upah bagi hasil dari setiap jasa servis yang dikerjakan.',
+        purpose:
+          'Memudahkan pemilik bengkel mengatur staf mekanik yang aktif bekerja serta menghitung pembagian komisi harian/mingguan/bulanan secara transparan tanpa hitung manual.',
+        steps: [
+          'Buka dropdown "Gudang & Mekanik" lalu pilih "Komisi Mekanik".',
+          'Untuk menambah mekanik baru, klik tombol "+ Tambah Mekanik", ketik nama lengkap mekanik, lalu simpan.',
+          'Untuk mengubah ejaan nama atau menghapus mekanik yang sudah berhenti bekerja, gunakan tombol Edit (Pensil) atau Hapus (Tempat Sampah) pada kartu mekanik.',
+          'Atur persentase bagi hasil komisi mekanik (misal: 40%, 50%, atau 60% dari tarif jasa servis) menggunakan pengatur persentase yang tersedia.',
+          'Pilih periode tanggal (Hari Ini / Minggu Ini / Bulan Ini) untuk melihat total unit kendaraan yang dikerjakan dan nominal komisi bersih masing-masing mekanik.',
+          'Klik "Kirim WA Rekap Komisi" atau unduh PDF/Excel untuk bukti pembayaran gaji/komisi mekanik.',
+        ],
+        features: [
+          {
+            label: 'Manajemen Staf Mekanik Dinamis',
+            desc: 'Setiap perubahan daftar mekanik langsung tersinkronisasi dengan pilihan mekanik di Kasir Servis.',
+          },
+          {
+            label: 'Persentase Komisi Fleksibel',
+            desc: 'Dapat diatur secara global maupun kustom per individu mekanik (senior vs junior).',
+          },
+          {
+            label: 'Rincian Nota per Mekanik',
+            desc: 'Menampilkan daftar nomor polisi kendaraan dan jenis servis apa saja yang dikerjakan oleh mekanik tersebut.',
+          },
+        ],
+        actionLabel: 'Buka Menu Komisi Mekanik',
+      },
+      {
+        id: 'nav-6-service-records',
+        tabKey: 'service-records',
+        number: 6,
+        title: 'Menu 6: Riwayat Servis Plat (Rekam Medis Kendaraan Pelanggan)',
+        groupBadge: 'DROPDOWN 2: GUDANG & MEKANIK',
+        groupColor: 'blue',
+        category: 'gudang-group',
+        icon: Car,
+        summary:
+          'Buku rekam medis digital kendaraan berdasarkan Nomor Polisi (Plat Nomor) untuk melacak histori kapan terakhir ganti oli, sparepart apa yang pernah dipasang, dan siapa mekaniknya.',
+        purpose:
+          'Sangat berguna saat pelanggan datang kembali atau komplain garansi servis; kasir cukup mengetik plat nomor untuk melihat seluruh riwayat perawatan motor/mobil tersebut.',
+        steps: [
+          'Buka dropdown "Gudang & Mekanik" lalu pilih "Riwayat Servis Plat".',
+          'Ketik Nomor Polisi (contoh: B 4567 KLM) atau nama pelanggan/model kendaraan di kolom pencarian.',
+          'Klik kartu kendaraan untuk membuka rincian kronologis seluruh kedatangan servis dari awal hingga terbaru.',
+          'Periksa catatan odometer (KM) terakhir, keluhan sebelumnya, suku cadang yang diganti, dan nama mekanik yang menangani.',
+          'Gunakan tombol WhatsApp untuk mengirimkan pengingat jadwal servis berkala / ganti oli berikutnya kepada pemilik kendaraan.',
+        ],
+        features: [
+          {
+            label: 'Pengelompokan Otomatis per Plat Nomor',
+            desc: 'Seluruh transaksi servis dengan plat nomor yang sama otomatis tergabung dalam satu profil kendaraan.',
+          },
+          {
+            label: 'Tracking Odometer (KM) & Garansi',
+            desc: 'Membantu mekanik mengecek kilometer terakhir saat ganti oli mesin/oli gardan/kampas CVT.',
+          },
+          {
+            label: 'Pesan Pengingat Servis WA',
+            desc: 'Kirim pesan ramah ke pelanggan saat sudah waktunya kembali servis rutin ke bengkel.',
+          },
+        ],
+        actionLabel: 'Buka Menu Riwayat Servis Plat',
+      },
+      {
+        id: 'nav-7-debts',
+        tabKey: 'debts',
+        number: 7,
+        title: 'Menu 7: Piutang & Tempo (Buku Kasbon Pelanggan Bengkel)',
+        groupBadge: 'DROPDOWN 3: KAS & PIUTANG',
+        groupColor: 'amber',
+        category: 'kas-group',
+        icon: BookMarked,
+        summary:
+          'Pencatatan tagihan servis kendaraan atau pembelian sparepart yang dibayar Tempo / Kasbon / Kurang Bayar (DP) beserta riwayat cicilan pelunasannya.',
+        purpose:
+          'Mencegah kebocoran uang bengkel akibat nota bon pelanggan atau rekanan armada yang lupa ditagih.',
+        steps: [
+          'Buka dropdown "Kas & Piutang" lalu pilih "Piutang & Tempo".',
+          'Lihat daftar pelanggan yang masih memiliki sisa tagihan belum lunas beserta tanggal jatuh temponya.',
+          'Untuk mencatat kasbon manual baru, klik tombol "+ Catat Piutang / Tempo Baru".',
+          'Saat pelanggan datang membayar cicilan atau melunasi bon, klik tombol "Bayar / Cicil" pada baris pelanggan tersebut.',
+          'Masukkan nominal pembayaran dan metode bayar (Tunai / Transfer), maka saldo kas bengkel otomatis bertambah dan sisa hutang berkurang.',
+          'Klik tombol "Tagih via WhatsApp" untuk mengirimkan rincian nota tagihan resmi secara sopan ke nomor HP pelanggan.',
+        ],
+        features: [
+          {
+            label: 'Terhubung Otomatis dari Kasir',
+            desc: 'Setiap transaksi Servis atau Sparepart yang memilih metode bayar TEMPO/KASBON otomatis tercatat di menu ini.',
+          },
+          {
+            label: 'Riwayat Cicilan Bertahap',
+            desc: 'Mencatat tanggal dan nominal setiap kali pelanggan menyicil pembayaran hingga status berubah menjadi LUNAS.',
+          },
+          {
+            label: 'Template Penagihan WhatsApp',
+            desc: 'Format pesan tagihan otomatis berisi rincian nomor nota, total tagihan, jumlah yang sudah dibayar, dan sisa hutang.',
+          },
+        ],
+        actionLabel: 'Buka Menu Piutang & Tempo',
+      },
+      {
+        id: 'nav-8-expenses',
+        tabKey: 'expenses',
+        number: 8,
+        title: 'Menu 8: Kas Keluar / Biaya (Pengeluaran Operasional Bengkel)',
+        groupBadge: 'DROPDOWN 3: KAS & PIUTANG',
+        groupColor: 'red',
+        category: 'kas-group',
+        icon: Wallet,
+        summary:
+          'Buku pencatatan seluruh pengeluaran operasional bengkel di luar HPP barang, seperti biaya listrik kompresor, beli bensin cuci part, konsumsi mekanik, hingga sewa ruko.',
+        purpose:
+          'Memastikan perhitungan Laba Bersih di Dashboard benar-benar akurat karena sudah dikurangi biaya operasional harian bengkel.',
+        steps: [
+          'Buka dropdown "Kas & Piutang" lalu pilih "Kas Keluar / Biaya".',
+          'Klik tombol "+ Catat Pengeluaran Baru".',
+          'Pilih kategori pengeluaran (Listrik & Air, Gaji & Komisi, Peralatan & Kunci Bengkel, Konsumsi, Sewa Tempat, atau Lainnya).',
+          'Masukkan nominal uang yang dikeluarkan serta keterangan jelas (contoh: Beli Bensin 2 Liter untuk cuci blok CVT & kain majun).',
+          'Simpan catatan; pengeluaran akan otomatis memotong Laba Bersih pada periode tersebut.',
+        ],
+        features: [
+          {
+            label: 'Filter Kategori & Tanggal',
+            desc: 'Memudahkan pemilik bengkel mengevaluasi pos biaya mana yang paling besar setiap bulannya.',
+          },
+          {
+            label: 'Integrasi Laba Rugi Bersih',
+            desc: 'Langsung terhubung ke kartu Laba Bersih di menu Ringkasan & Laba.',
+          },
+          {
+            label: 'Ekspor Laporan Biaya',
+            desc: 'Unduh rekap kas keluar ke file Excel atau PDF untuk pembukuan bulanan.',
+          },
+        ],
+        actionLabel: 'Buka Menu Kas Keluar / Biaya',
+      },
+      {
+        id: 'nav-9-branches',
+        tabKey: 'branches',
+        number: 9,
+        title: 'Menu 9: Saldo Kas & Bank (Laci Tunai, Rekening QRIS & Deposit Part)',
+        groupBadge: 'DROPDOWN 3: KAS & PIUTANG',
+        groupColor: 'emerald',
+        category: 'kas-group',
+        icon: Building2,
+        summary:
+          'Pemantauan posisi uang riil bengkel yang terbagi ke dalam Kas Tunai Laci, Saldo Rekening Bank / QRIS, dan Deposit Supplier Sparepart, lengkap dengan dukungan Multi-Cabang.',
+        purpose:
+          'Memudahkan pemilik bengkel mencocokkan uang fisik di laci kasir dengan saldo di rekening bank serta mencatat perpindahan uang (setor kas ke bank / tambah modal laci).',
+        steps: [
+          'Buka dropdown "Kas & Piutang" lalu pilih "Saldo Kas & Bank".',
+          'Periksa 4 Kartu Likuiditas di bagian atas: Uang Tunai Laci (Cash), Saldo Rekening Bank / QRIS, Deposit Supplier & Part, serta Total Likuiditas Bengkel.',
+          'Jika terjadi perpindahan uang (misal menyetor uang tunai laci ke bank, menarik uang bank untuk modal kembalian laci, atau setor deposit ke supplier part), klik tombol "+ Catat Mutasi Kas/Bank".',
+          'Khusus Pemilik/Admin: Klik tombol "⚙️ Atur Saldo Riil" jika ingin menyesuaikan angka saldo di aplikasi agar sama persis dengan hasil hitung fisik uang nyata saat ini.',
+          'Jika bengkel memiliki lebih dari 1 cabang, klik "+ Tambah Cabang" untuk mengelola saldo kas masing-masing cabang secara terpisah.',
+        ],
+        features: [
+          {
+            label: 'Atur Saldo Riil (Khusus Admin)',
+            desc: 'Menyesuaikan nominal Kas Tunai, Bank/QRIS, dan Deposit Supplier secara instan dengan catatan audit otomatis.',
+          },
+          {
+            label: 'Buku Mutasi Saldo Lengkap',
+            desc: 'Mencatat waktu, nominal sebelum & sesudah, arus masuk/keluar, serta nama petugas kasir/admin.',
+          },
+          {
+            label: 'Isolasi Hak Akses Kasir Cabang',
+            desc: 'Akun kasir hanya dapat melihat saldo cabangnya sendiri, sedangkan Admin dapat memantau seluruh cabang.',
+          },
+        ],
+        actionLabel: 'Buka Menu Saldo Kas & Bank',
+      },
+      {
+        id: 'nav-10-reports',
+        tabKey: 'reports',
+        number: 10,
+        title: 'Menu 10: Laporan Penjualan (Riwayat Nota, Cetak Ulang & Retur)',
+        groupBadge: 'DROPDOWN 4: LAPORAN & SISTEM',
+        groupColor: 'blue',
+        category: 'laporan-group',
+        icon: BarChart3,
+        summary:
+          'Arsip lengkap seluruh nota transaksi servis maupun penjualan sparepart dengan fitur filter periode, cetak ulang struk, kirim ulang WA, dan pembatalan/retur transaksi.',
+        purpose:
+          'Digunakan untuk mengaudit seluruh nota yang masuk, melihat 5 produk/jasa terlaris, membandingkan metode pembayaran (Tunai vs QRIS vs Transfer), serta mencetak laporan pembukuan.',
+        steps: [
+          'Buka dropdown "Laporan & Sistem" lalu pilih "Laporan Penjualan".',
+          'Pilih filter periode di kanan atas: Hari Ini, 7 Hari, 30 Hari, atau Semua.',
+          'Gunakan filter "Semua Jenis Transaksi" untuk menyaring khusus nota "🔧 Servis Kendaraan" atau khusus "🔩 Penjualan Sparepart Eceran".',
+          'Ketik nomor faktur, plat nomor kendaraan, nama mekanik, atau nama pelanggan di kotak pencarian.',
+          'Klik tombol "Struk" pada baris transaksi untuk melihat detail nota, mencetak ulang ke printer thermal, atau mengirim nota ke WhatsApp.',
+          'Jika ada kesalahan input transaksi, klik ikon panah merah (Batalkan/Retur) agar transaksi dibatalkan dan stok sparepart otomatis dikembalikan ke gudang.',
+        ],
+        features: [
+          {
+            label: '5 Produk & Jasa Terlaris',
+            desc: 'Menampilkan peringkat sparepart dan layanan servis yang menghasilkan omset serta laba tertinggi.',
+          },
+          {
+            label: 'Rincian Plat Nomor & Mekanik di Tabel',
+            desc: 'Setiap baris transaksi langsung menampilkan nomor polisi kendaraan, nama mekanik, dan metode bayar.',
+          },
+          {
+            label: 'Ekspor Pembukuan Excel & PDF',
+            desc: 'Satu klik untuk mengunduh laporan penjualan lengkap siap cetak.',
+          },
+        ],
+        actionLabel: 'Buka Menu Laporan Penjualan',
+      },
+      {
+        id: 'nav-11-settings',
+        tabKey: 'settings',
+        number: 11,
+        title: 'Menu 11: Pengaturan Bengkel (Profil, QRIS, Printer, Backup & Cloud)',
+        groupBadge: 'DROPDOWN 4: LAPORAN & SISTEM',
+        groupColor: 'purple',
+        category: 'laporan-group',
+        icon: Settings,
+        summary:
+          'Pusat konfigurasi identitas bengkel (Nama, Alamat, WA, Catatan Kaki Struk), Upload Gambar QRIS Statis/Dinamis, Koneksi Printer Bluetooth, Manajemen Akun PIN Kasir, Backup Data, & Firebase Cloud.',
+        purpose:
+          'Mengatur seluruh identitas dan perangkat keras bengkel agar struk nota tampil profesional dengan nama dan logo/QRIS bengkel sendiri.',
+        steps: [
+          'Buka dropdown "Laporan & Sistem" lalu pilih "Pengaturan Bengkel".',
+          'Pada tab Profil Toko: Isi Nama Bengkel, Slogan, Alamat Lengkap, Nomor Telepon/WA, dan pesan catatan kaki struk (contoh: "Garansi servis 7 hari dengan membawa nota ini").',
+          'Pada bagian QRIS: Unggah foto kode QRIS resmi bengkel Anda agar muncul otomatis di layar saat pelanggan memilih bayar via QRIS.',
+          'Pada bagian Printer Thermal: Pilih ukuran kertas (58mm atau 80mm) dan klik "Hubungkan Printer Bluetooth".',
+          'Pada bagian Keamanan & Backup: Unduh file Cadangan Database (.json / enkripsi AES-256) secara berkala atau muat contoh data sparepart & jasa servis.',
+          'Pada bagian Cloud Database: Masukkan konfigurasi Firebase milik bengkel Anda sendiri jika ingin sinkronisasi online multi-perangkat.',
+        ],
+        features: [
+          {
+            label: 'Kelola PIN Kasir & Admin',
+            desc: 'Buat akun login terpisah untuk pemilik bengkel (Admin) dan karyawan jaga (Kasir) dengan PIN keamanan.',
+          },
+          {
+            label: 'Muat Contoh Data Bengkel (Demo)',
+            desc: 'Tersedia tombol muat katalog contoh suku cadang, oli, dan tarif jasa servis bengkel untuk simulasi cepat.',
+          },
+          {
+            label: 'Backup & Restore Offline/Cloud',
+            desc: 'Menjamin keamanan data bengkel 100% meskipun ganti perangkat HP/Tablet/Laptop.',
+          },
+        ],
+        actionLabel: 'Buka Pengaturan Bengkel',
+        isSettingsModal: true,
+      },
+      {
+        id: 'nav-12-guide',
+        tabKey: 'guide',
+        number: 12,
+        title: 'Menu 12: Panduan Kasir (Buku Petunjuk Operasional Lengkap)',
+        groupBadge: 'DROPDOWN 4: LAPORAN & SISTEM',
+        groupColor: 'amber',
+        category: 'laporan-group',
+        icon: BookOpen,
+        summary:
+          'Halaman dokumentasi interaktif yang sedang Anda baca saat ini, memuat panduan seluruh 12 navigasi aplikasi, SOP kerja kasir harian, cara pasang PWA, hingga solusi kendala teknis.',
+        purpose:
+          'Memudahkan pelatihan kasir baru maupun panduan referensi cepat bagi pemilik bengkel kapan saja dibutuhkan tanpa perlu buku manual cetak.',
+        steps: [
+          'Gunakan kotak pencarian di bagian atas halaman ini untuk mencari topik spesifik (misal: "komisi", "plat nomor", "tempo", "printer", "backup").',
+          'Klik tombol tab kategori untuk menyaring panduan berdasarkan Grup Navigasi (Kasir, Gudang, Kas, Laporan, SOP, Printer, Shortcut).',
+          'Klik judul bab mana saja untuk membuka/menutup rincian langkah-langkahnya, lalu klik tombol "Buka Menu..." di bagian bawah bab untuk langsung menuju ke fitur tersebut.',
+        ],
+        features: [
+          {
+            label: 'Tombol Pintas Langsung ke Menu',
+            desc: 'Setiap bab panduan dilengkapi tombol interaktif untuk langsung membuka menu yang sedang dijelaskan.',
+          },
+          {
+            label: 'Pencarian Instan Kata Kunci',
+            desc: 'Menemukan petunjuk fitur dalam hitungan detik.',
+          },
+          {
+            label: 'Panduan Lengkap 12 Navigasi',
+            desc: 'Selaras 100% dengan tata letak menu dropdown terbaru BENGKEL-Q.',
+          },
+        ],
+        actionLabel: 'Tetap di Halaman Panduan',
+      },
+    ],
+    []
+  );
+
+  // Filter navigation guides by category and search query
+  const filteredNavGuides = useMemo(() => {
+    const q = searchQuery.toLowerCase().trim();
+    return navMenuGuides.filter((item) => {
+      const matchCat =
+        activeCategory === 'all' ||
+        activeCategory === 'nav-all' ||
+        item.category === activeCategory;
+
+      if (!q) return matchCat;
+
+      const inText =
+        item.title.toLowerCase().includes(q) ||
+        item.groupBadge.toLowerCase().includes(q) ||
+        item.summary.toLowerCase().includes(q) ||
+        item.purpose.toLowerCase().includes(q) ||
+        item.steps.some((s) => s.toLowerCase().includes(q)) ||
+        item.features.some(
+          (f) => f.label.toLowerCase().includes(q) || f.desc.toLowerCase().includes(q)
+        );
+      return inText;
+    });
+  }, [navMenuGuides, activeCategory, searchQuery]);
+
+  const badgeStyleMap: Record<NavMenuGuideItem['groupColor'], string> = {
+    red: 'bg-red-600/10 text-red-600 dark:text-red-400 border-red-600/25',
+    blue: 'bg-blue-600/10 text-blue-600 dark:text-blue-400 border-blue-600/25',
+    emerald: 'bg-emerald-600/10 text-emerald-600 dark:text-emerald-400 border-emerald-600/25',
+    amber: 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30',
+    purple: 'bg-purple-600/10 text-purple-600 dark:text-purple-400 border-purple-600/25',
+  };
 
   return (
     <div className="space-y-6 max-w-6xl mx-auto pb-16">
-      {/* Header Banner */}
-      <div className="relative overflow-hidden rounded-3xl bg-zinc-950 border border-zinc-800 p-6 sm:p-8 text-white shadow-xl">
+      {/* Header Banner — Red, White & Blue BENGKEL-Q Theme */}
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-950 via-blue-950 to-red-950 border border-blue-800/60 p-6 sm:p-8 text-white shadow-xl">
         <div className="relative z-10 space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-amber-400 text-xs font-mono font-bold tracking-wide">
-            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-            <span>PANDUAN RESMI OPERASIONAL KASIR BENGKEL MOTOR / MOBIL</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-600/20 border border-red-500/40 text-red-300 text-xs font-mono font-bold tracking-wide">
+            <Sparkles className="w-3.5 h-3.5 text-red-400" />
+            <span>BUKU PANDUAN RESMI BENGKEL-Q • LENGKAP 12 MENU NAVIGASI</span>
           </div>
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-white">
-            Buku Panduan Operasional Kasir Bengkel
+            Panduan Lengkap Operasional BENGKEL-Q
           </h1>
-          <p className="text-zinc-400 text-xs sm:text-sm md:text-base max-w-3xl leading-relaxed">
-            Petunjuk lengkap pengoperasian kasir servis kendaraan (plat &amp; mekanik), penjualan sparepart eceran, menu dropdown stok suku cadang &amp; oli, manajemen tim mekanik (tambah, edit, hapus mekanik &amp; hitung komisi), buku kas operasional, hingga cetak struk thermal 58mm/80mm dan kirim nota via WhatsApp.
+          <p className="text-blue-100/80 text-xs sm:text-sm md:text-base max-w-3xl leading-relaxed">
+            Petunjuk lengkap langkah demi langkah untuk mengoperasikan seluruh <strong>12 Menu Navigasi Dropdown</strong> di aplikasi kasir bengkel motor &amp; mobil: mulai dari <strong>Ringkasan &amp; Laba</strong>, <strong>Kasir Servis</strong>, <strong>Kasir Sparepart</strong>, <strong>Stok Gudang</strong>, <strong>Komisi Mekanik</strong>, <strong>Riwayat Servis Plat</strong>, <strong>Piutang &amp; Tempo</strong>, <strong>Kas Keluar</strong>, <strong>Saldo Kas &amp; Bank</strong>, <strong>Laporan Penjualan</strong>, hingga <strong>Pengaturan Printer Thermal &amp; Cloud</strong>.
           </p>
 
           {/* Search Box */}
-          <div className="pt-2 max-w-xl">
+          <div className="pt-2 max-w-2xl">
             <div className="relative">
-              <Search className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" />
+              <Search className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-blue-300" />
               <input
                 type="text"
-                placeholder="Cari panduan... (contoh: plat nomor, mekanik baru, komisi, ganti oli, f3, thermal, tempo)"
+                placeholder="Cari menu atau panduan... (contoh: kasir servis, plat nomor, komisi mekanik, stok oli, piutang, saldo bank, printer)"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 rounded-2xl bg-zinc-900 border border-zinc-800 text-white placeholder-zinc-500 text-sm font-medium focus:outline-none focus:border-amber-500 shadow-lg"
+                className="w-full pl-12 pr-20 py-3 rounded-2xl bg-slate-900/90 border border-blue-700/60 text-white placeholder-blue-300/50 text-sm font-medium focus:outline-none focus:border-red-500 shadow-lg"
               />
               {searchQuery && (
                 <button
                   type="button"
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold px-2 py-1 bg-zinc-800 text-zinc-300 rounded-lg hover:bg-zinc-700 cursor-pointer"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold px-2.5 py-1 bg-red-600 text-white rounded-lg hover:bg-red-500 cursor-pointer"
                 >
                   Reset
                 </button>
@@ -128,8 +622,8 @@ export const GuideView: React.FC<GuideViewProps> = ({
               }}
               className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl font-bold text-xs sm:text-sm whitespace-nowrap transition-all cursor-pointer ${
                 isActive
-                  ? 'bg-amber-500 text-zinc-950 font-black shadow-md'
-                  : 'bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-zinc-200 border border-zinc-200 dark:border-zinc-800'
+                  ? 'bg-red-600 text-white font-black shadow-md shadow-red-600/20'
+                  : 'bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:text-blue-700 dark:hover:text-white border border-zinc-200 dark:border-zinc-800'
               }`}
             >
               <Icon className="w-4 h-4" />
@@ -139,22 +633,137 @@ export const GuideView: React.FC<GuideViewProps> = ({
         })}
       </div>
 
-      {/* Quick PWA & Full Screen Notice */}
+      {/* Overview Map of the 4 Dropdown Groups + 1 Main Menu (12 Menus Total) */}
+      {(activeCategory === 'all' || activeCategory === 'nav-all') && !searchQuery && (
+        <div
+          className={`p-5 rounded-2xl border ${
+            darkMode ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-blue-200/80'
+          } shadow-xs space-y-4`}
+        >
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-zinc-200 dark:border-zinc-800 pb-3">
+            <div>
+              <h2 className="text-base sm:text-lg font-black text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+                <Layers className="w-5 h-5 text-red-600" />
+                <span>Peta Struktur Navigasi Dropdown BENGKEL-Q (Total 12 Menu)</span>
+              </h2>
+              <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                Navigasi aplikasi telah dikelompokkan menjadi 1 Menu Utama + 4 Grup Dropdown hemat tempat. Klik salah satu menu di bawah untuk membaca panduannya:
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+            {/* Group 1 */}
+            <div className="p-3.5 rounded-xl bg-red-50/60 dark:bg-red-950/20 border border-red-200 dark:border-red-900/50 space-y-2">
+              <div className="font-black text-red-700 dark:text-red-400 uppercase tracking-wider text-[11px]">
+                1. Beranda &amp; Kasir Transaksi
+              </div>
+              <div className="space-y-1.5">
+                {navMenuGuides.slice(0, 3).map((m) => (
+                  <button
+                    key={m.id}
+                    type="button"
+                    onClick={() => {
+                      setExpandedSection(m.id);
+                      document.getElementById(m.id)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }}
+                    className="w-full text-left px-2.5 py-1.5 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 hover:border-red-500 font-bold text-zinc-800 dark:text-zinc-200 flex items-center justify-between cursor-pointer"
+                  >
+                    <span>{m.number}. {m.title.replace(/^Menu \d+:\s*/, '').split(' (')[0]}</span>
+                    <ChevronRight className="w-3.5 h-3.5 text-red-500 shrink-0" />
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Group 2 */}
+            <div className="p-3.5 rounded-xl bg-blue-50/60 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-900/50 space-y-2">
+              <div className="font-black text-blue-700 dark:text-blue-400 uppercase tracking-wider text-[11px]">
+                2. Dropdown Gudang &amp; Mekanik
+              </div>
+              <div className="space-y-1.5">
+                {navMenuGuides.slice(3, 6).map((m) => (
+                  <button
+                    key={m.id}
+                    type="button"
+                    onClick={() => {
+                      setExpandedSection(m.id);
+                      document.getElementById(m.id)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }}
+                    className="w-full text-left px-2.5 py-1.5 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 hover:border-blue-500 font-bold text-zinc-800 dark:text-zinc-200 flex items-center justify-between cursor-pointer"
+                  >
+                    <span>{m.number}. {m.title.replace(/^Menu \d+:\s*/, '').split(' (')[0]}</span>
+                    <ChevronRight className="w-3.5 h-3.5 text-blue-500 shrink-0" />
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Group 3 */}
+            <div className="p-3.5 rounded-xl bg-emerald-50/60 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-900/50 space-y-2">
+              <div className="font-black text-emerald-700 dark:text-emerald-400 uppercase tracking-wider text-[11px]">
+                3. Dropdown Kas &amp; Piutang
+              </div>
+              <div className="space-y-1.5">
+                {navMenuGuides.slice(6, 9).map((m) => (
+                  <button
+                    key={m.id}
+                    type="button"
+                    onClick={() => {
+                      setExpandedSection(m.id);
+                      document.getElementById(m.id)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }}
+                    className="w-full text-left px-2.5 py-1.5 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 hover:border-emerald-500 font-bold text-zinc-800 dark:text-zinc-200 flex items-center justify-between cursor-pointer"
+                  >
+                    <span>{m.number}. {m.title.replace(/^Menu \d+:\s*/, '').split(' (')[0]}</span>
+                    <ChevronRight className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Group 4 */}
+            <div className="p-3.5 rounded-xl bg-purple-50/60 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-900/50 space-y-2">
+              <div className="font-black text-purple-700 dark:text-purple-400 uppercase tracking-wider text-[11px]">
+                4. Dropdown Laporan &amp; Sistem
+              </div>
+              <div className="space-y-1.5">
+                {navMenuGuides.slice(9, 12).map((m) => (
+                  <button
+                    key={m.id}
+                    type="button"
+                    onClick={() => {
+                      setExpandedSection(m.id);
+                      document.getElementById(m.id)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }}
+                    className="w-full text-left px-2.5 py-1.5 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 hover:border-purple-500 font-bold text-zinc-800 dark:text-zinc-200 flex items-center justify-between cursor-pointer"
+                  >
+                    <span>{m.number}. {m.title.replace(/^Menu \d+:\s*/, '').split(' (')[0]}</span>
+                    <ChevronRight className="w-3.5 h-3.5 text-purple-500 shrink-0" />
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Quick PWA Install Banner */}
       <div
         className={`p-4 sm:p-5 rounded-2xl border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 ${
-          darkMode ? 'bg-zinc-900 border-zinc-800' : 'bg-amber-500/10 border-amber-500/30'
+          darkMode ? 'bg-zinc-900 border-zinc-800' : 'bg-blue-50/80 border-blue-200'
         }`}
       >
         <div className="flex items-start gap-3">
-          <div className="p-2.5 bg-amber-500 text-zinc-950 rounded-xl shadow-xs shrink-0 font-bold">
+          <div className="p-2.5 bg-blue-700 text-white rounded-xl shadow-xs shrink-0 font-bold">
             <Smartphone className="w-6 h-6" />
           </div>
           <div>
             <h3 className="text-sm sm:text-base font-black text-zinc-900 dark:text-zinc-100">
-              Tips Tablet &amp; HP: Pasang Aplikasi ke Layar Utama (PWA)
+              Tips Tablet, HP &amp; Komputer: Pasang Aplikasi BENGKEL-Q ke Layar Utama (PWA)
             </h3>
             <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-0.5 max-w-2xl">
-              Agar kasir bengkel dapat langsung melayani tanpa membuka browser berulang kali, klik tombol <strong>"Pasang Aplikasi"</strong> di bar atas atau gunakan browser menu <em>"Tambahkan ke Layar Utama (Add to Home Screen)"</em>.
+              Klik tombol <strong>"Pasang Aplikasi"</strong> di bilah atas atau menu browser <em>"Tambahkan ke Layar Utama"</em> agar aplikasi terinstal dengan ikon bengkel resmi bernama <strong>BENGKEL-Q</strong> dan siap berjalan layar penuh meskipun internet sedang lambat/offline.
             </p>
           </div>
         </div>
@@ -162,7 +771,7 @@ export const GuideView: React.FC<GuideViewProps> = ({
           <button
             type="button"
             onClick={() => openAppInNewTab()}
-            className="w-full sm:w-auto px-4 py-2.5 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-black text-xs rounded-xl flex items-center justify-center gap-2 shrink-0 cursor-pointer shadow-xs active:scale-95 transition-all"
+            className="w-full sm:w-auto px-4 py-2.5 bg-red-600 hover:bg-red-500 text-white font-black text-xs rounded-xl flex items-center justify-center gap-2 shrink-0 cursor-pointer shadow-xs active:scale-95 transition-all"
           >
             <ExternalLink className="w-4 h-4" />
             <span>Buka Layar Penuh (Tab Baru)</span>
@@ -170,685 +779,436 @@ export const GuideView: React.FC<GuideViewProps> = ({
         )}
       </div>
 
-      {/* Main Guide Content Blocks */}
-      <div className="space-y-4">
-        {/* ============================================================ */}
-        {/* SECTION 1: ALUR KERJA HARIAN KASIR BENGKEL (SOP) */}
-        {/* ============================================================ */}
-        {(activeCategory === 'all' || activeCategory === 'workflow') && (
-          <div
-            className={`rounded-2xl border transition-all ${
-              darkMode ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200'
-            } shadow-sm overflow-hidden`}
-          >
-            <button
-              type="button"
-              onClick={() => toggleSection('daily-flow')}
-              className="w-full p-5 sm:p-6 flex items-center justify-between text-left cursor-pointer hover:bg-zinc-50/50 dark:hover:bg-zinc-800/30"
-            >
-              <div className="flex items-center gap-3.5">
-                <div className="w-10 h-10 rounded-xl bg-amber-500/15 text-amber-500 flex items-center justify-center font-black">
-                  <Clock className="w-5 h-5" />
-                </div>
-                <div>
-                  <h2 className="text-base sm:text-lg font-black text-zinc-900 dark:text-zinc-100">
-                    Bab 1: Alur Kerja Harian Kasir Bengkel (Pagi, Siang &amp; Malam)
-                  </h2>
-                  <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                    Standard Operating Procedure (SOP) harian penjaga kasir bengkel motor &amp; mobil
-                  </p>
-                </div>
-              </div>
-              <div
-                className={`w-7 h-7 rounded-lg flex items-center justify-center transition-transform ${
-                  expandedSection === 'daily-flow'
-                    ? 'rotate-90 bg-amber-500 text-zinc-950 font-black'
-                    : 'text-zinc-400'
-                }`}
-              >
-                <ChevronRight className="w-4 h-4" />
-              </div>
-            </button>
-
-            {expandedSection === 'daily-flow' && (
-              <div className="p-5 sm:p-6 pt-0 border-t border-zinc-100 dark:border-zinc-800 space-y-5">
-                {/* Step 1: Pagi */}
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-extrabold text-sm">
-                    <span className="w-6 h-6 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center text-xs font-mono font-black">
-                      1
-                    </span>
-                    <span>Pagi Hari: Buka Shift Kasir, Cek Modal Awal &amp; Tim Mekanik</span>
-                  </div>
-                  <div className="ml-8 text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 space-y-1.5 leading-relaxed bg-zinc-50 dark:bg-zinc-950/50 p-4 rounded-xl border border-zinc-200 dark:border-zinc-800">
-                    <p>
-                      • Klik pill <strong>"Mulai Kasir"</strong> di bilah atas untuk membuka shift hari ini.
-                    </p>
-                    <p>
-                      • Masukkan nominal <strong>Modal Kas Awal</strong> (uang receh pecahan Rp2.000, Rp5.000, Rp10.000 yang disiapkan di laci untuk kembalian pelanggan).
-                    </p>
-                    <p>
-                      • Buka menu <strong>"Data Mekanik"</strong> untuk memastikan daftar mekanik yang masuk bekerja hari ini sudah lengkap (gunakan tombol <em>+ Tambah Mekanik</em> jika ada mekanik baru).
-                    </p>
-                    <p>
-                      • Buka menu <strong>"Stok Sparepart &amp; Oli"</strong>, pilih dropdown <em>"Filter Kondisi Stok &gt; Stok Menipis / Kritis"</em> untuk melihat oli atau sparepart yang perlu segera dibeli/kulakan.
-                    </p>
-                  </div>
-                </div>
-
-                {/* Step 2: Siang */}
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-extrabold text-sm">
-                    <span className="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xs font-mono font-black">
-                      2
-                    </span>
-                    <span>Sepanjang Hari: Melayani Servis Kendaraan &amp; Penjualan Sparepart</span>
-                  </div>
-                  <div className="ml-8 text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 space-y-2 leading-relaxed bg-zinc-50 dark:bg-zinc-950/50 p-4 rounded-xl border border-zinc-200 dark:border-zinc-800">
-                    <p>
-                      • <strong>Melayani Kendaraan Masuk Servis:</strong> Buka menu <strong>"Kasir Servis"</strong> dan tekan tombol kuning <strong>"+ Servis Kendaraan Baru" (Shortcut F3)</strong>.
-                      <br />- Masukkan <strong>Plat Nomor</strong> kendaraan (contoh: B 1234 ABC), <strong>Model Kendaraan</strong> (Beat, Vario, Avanza), <strong>Odometer KM</strong>, dan <strong>Keluhan Pelanggan</strong>.
-                      <br />- Pilih <strong>Nama Mekanik</strong> yang ditugaskan mengerjakan kendaraan tersebut.
-                      <br />- Masukkan <strong>Jasa Servis</strong> yang dikerjakan (contoh: Servis Rutin, Tune Up, Ganti Oli + Jasa, Servis CVT).
-                      <br />- Masukkan <strong>Suku Cadang / Oli</strong> yang dipasang (stok fisik otomatis berkurang di rak bengkel).
-                      <br />- Pilih metode bayar (Tunai, QRIS, Transfer, atau <strong>Tempo / Kasbon</strong>).
-                      <br />- Cetak struk nota servis ke printer thermal atau klik <strong>"Kirim WA Nota Servis"</strong> ke nomor HP pelanggan.
-                    </p>
-                    <p>
-                      • <strong>Melayani Pembelian Sparepart / Oli Eceran:</strong> Buka menu <strong>"Kasir Sparepart"</strong>.
-                      <br />- Tekan <strong>F2</strong> untuk mencari nama sparepart atau <strong>F4</strong> untuk scan barcode kemasan.
-                      <br />- Klik barang untuk memasukkan ke keranjang kasir POS, atur diskon jika ada, dan tekan <strong>Bayar [F1]</strong>.
-                    </p>
-                    <p>
-                      • <strong>Mencatat Biaya Kas Operasional:</strong> Buka menu <strong>"Buku Kas Keluar"</strong> saat ada pengeluaran harian bengkel (contoh: bensin operasional, makan mekanik lembur, token listrik, atau beli perkakas kunci).
-                    </p>
-                  </div>
-                </div>
-
-                {/* Step 3: Malam */}
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-purple-600 dark:text-purple-400 font-extrabold text-sm">
-                    <span className="w-6 h-6 rounded-full bg-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center text-xs font-mono font-black">
-                      3
-                    </span>
-                    <span>Sore / Malam Hari: Rekap Komisi Mekanik &amp; Tutup Shift Kasir</span>
-                  </div>
-                  <div className="ml-8 text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 space-y-1.5 leading-relaxed bg-zinc-50 dark:bg-zinc-950/50 p-4 rounded-xl border border-zinc-200 dark:border-zinc-800">
-                    <p>
-                      • Buka menu <strong>"Data Mekanik"</strong>, periksa total pengerjaan unit dan komisi upah bagi hasil tiap mekanik.
-                    </p>
-                    <p>
-                      • Klik tombol <strong>"Kirim WA Rekap Komisi"</strong> untuk mengirimkan rincian pendapatan jasa hari ini langsung ke nomor WhatsApp mekanik, atau unduh slip komisi dalam format PDF / Excel.
-                    </p>
-                    <p>
-                      • Klik pill shift di bilah atas, lalu pilih <strong>"Tutup Shift Kasir"</strong>.
-                    </p>
-                    <p>
-                      • Hitung seluruh uang tunai fisik yang ada di laci kasir, lalu ketikkan ke kolom <strong>"Uang Fisik Aktual"</strong>. Sistem otomatis membandingkan dengan uang ekspektasi sistem untuk memastikan tidak ada selisih.
-                    </p>
-                    <p>
-                      • Cetak <strong>Laporan Penutupan Shift</strong> sebagai arsip resmi harian pemilik bengkel.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
+      {/* ============================================================ */}
+      {/* ALL 12 NAVIGATION MENU GUIDES (DYNAMIC ACCORDION CARDS)      */}
+      {/* ============================================================ */}
+      {filteredNavGuides.length > 0 && (
+        <div className="space-y-3.5">
+          <div className="flex items-center justify-between px-1">
+            <h2 className="text-sm sm:text-base font-black uppercase tracking-wider text-zinc-800 dark:text-zinc-200 flex items-center gap-2">
+              <BookOpen className="w-4 h-4 text-red-600" />
+              <span>Panduan Lengkap Penggunaan Setiap Menu Navigasi ({filteredNavGuides.length} Menu)</span>
+            </h2>
           </div>
-        )}
 
-        {/* ============================================================ */}
-        {/* SECTION 2: PANDUAN KASIR SERVIS KENDARAAN */}
-        {/* ============================================================ */}
-        {(activeCategory === 'all' || activeCategory === 'service') && (
-          <div
-            className={`rounded-2xl border transition-all ${
-              darkMode ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200'
-            } shadow-sm overflow-hidden`}
-          >
-            <button
-              type="button"
-              onClick={() => toggleSection('service-guide')}
-              className="w-full p-5 sm:p-6 flex items-center justify-between text-left cursor-pointer hover:bg-zinc-50/50 dark:hover:bg-zinc-800/30"
-            >
-              <div className="flex items-center gap-3.5">
-                <div className="w-10 h-10 rounded-xl bg-amber-500/15 text-amber-500 flex items-center justify-center font-black">
-                  <Wrench className="w-5 h-5" />
-                </div>
-                <div>
-                  <h2 className="text-base sm:text-lg font-black text-zinc-900 dark:text-zinc-100">
-                    Bab 2: Panduan Kasir Servis Kendaraan (Plat Nomor &amp; Mekanik)
-                  </h2>
-                  <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                    Fungsi pencatatan servis kendaraan, grafik statistik servis &amp; logbook riwayat pengerjaan
-                  </p>
-                </div>
-              </div>
+          {filteredNavGuides.map((item) => {
+            const Icon = item.icon;
+            const isExpanded = expandedSection === item.id || Boolean(searchQuery.trim());
+            return (
               <div
-                className={`w-7 h-7 rounded-lg flex items-center justify-center transition-transform ${
-                  expandedSection === 'service-guide'
-                    ? 'rotate-90 bg-amber-500 text-zinc-950 font-black'
-                    : 'text-zinc-400'
-                }`}
+                id={item.id}
+                key={item.id}
+                className={`rounded-2xl border transition-all ${
+                  darkMode ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200'
+                } shadow-xs overflow-hidden`}
               >
-                <ChevronRight className="w-4 h-4" />
-              </div>
-            </button>
-
-            {expandedSection === 'service-guide' && (
-              <div className="p-5 sm:p-6 pt-0 border-t border-zinc-100 dark:border-zinc-800 space-y-4">
-                <div className="p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/40 space-y-2">
-                  <h3 className="font-bold text-sm text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-                    <span className="p-1 rounded-md bg-amber-500 text-zinc-950 font-black">F3</span>
-                    <span>Tombol "+ Servis Kendaraan Baru (Plat &amp; Mekanik)"</span>
-                  </h3>
-                  <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed">
-                    Dirancang untuk mencatat alur servis kendaraan secara menyeluruh tanpa membingungkan kasir. Formulir ini mencatat:
-                  </p>
-                  <ul className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 space-y-1 list-disc list-inside">
-                    <li><strong>Nomor Polisi (Plat Kendaraan):</strong> Wajib diisi (contoh: B 3456 TKL). Plat nomor menjadi kata kunci pencarian utama riwayat kendaraan saat motor/mobil datang kembali di kemudian hari.</li>
-                    <li><strong>Penugasan Mekanik:</strong> Pilih nama mekanik yang mengerjakan kendaraan dari daftar dropdown atau ketik nama mekanik baru.</li>
-                    <li><strong>Model &amp; Odometer KM:</strong> Mencatat tipe motor/mobil dan jarak tempuh kilometer saat servis (sangat berguna untuk mengingatkan jadwal ganti oli berikutnya).</li>
-                    <li><strong>Jasa Servis yang Dilakukan:</strong> Pilih dari katalog jasa atau ketik jasa servis kustom. Jasa servis <em>tidak memotong stok</em> dan <em>tidak memiliki modal HPP</em> (100% margin keuntungan bengkel).</li>
-                    <li><strong>Sparepart &amp; Oli Terpasang:</strong> Menambahkan suku cadang yang diganti. Stok fisik otomatis berkurang di gudang/rak, dan harga modal (HPP) otomatis dihitung ke laporan keuangan.</li>
-                    <li><strong>Pilihan Pembayaran Tempo (Hutang):</strong> Jika pelanggan langganan ingin bayar tempo atau bayar DP dulu, pilih metode pembayaran <strong>TEMPO</strong>. Sisa saldo otomatis masuk ke Buku Kasbon.</li>
-                  </ul>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs sm:text-sm">
-                  <div className="p-3.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/40 space-y-1.5">
-                    <div className="font-black text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5">
-                      <span>📊</span>
-                      <span>Grafik Jasa Servis Populer</span>
+                <button
+                  type="button"
+                  onClick={() => toggleSection(item.id)}
+                  className="w-full p-4 sm:p-5 flex items-center justify-between text-left cursor-pointer hover:bg-zinc-50/70 dark:hover:bg-zinc-800/40 transition-colors"
+                >
+                  <div className="flex items-start sm:items-center gap-3.5 pr-2">
+                    <div className="w-10 h-10 rounded-xl bg-blue-600/10 dark:bg-blue-500/15 text-blue-700 dark:text-blue-400 flex items-center justify-center font-black shrink-0 border border-blue-500/20">
+                      <Icon className="w-5 h-5" />
                     </div>
-                    <p className="text-zinc-500 dark:text-zinc-400 text-xs">
-                      Menampilkan diagram batang visual jenis servis apa saja yang paling sering dilakukan di bengkel (seperti Ganti Oli, Servis CVT, Tune Up, Ganti Kampas Rem) beserta total pendapatan jasa yang dihasilkan.
-                    </p>
-                  </div>
-
-                  <div className="p-3.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/40 space-y-1.5">
-                    <div className="font-black text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5">
-                      <span>👨‍🔧</span>
-                      <span>Grafik Rekap Kerja Tiap Mekanik</span>
+                    <div className="space-y-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span
+                          className={`text-[10px] font-mono font-black px-2 py-0.5 rounded-md border ${
+                            badgeStyleMap[item.groupColor]
+                          }`}
+                        >
+                          {item.groupBadge}
+                        </span>
+                      </div>
+                      <h3 className="text-sm sm:text-base font-black text-zinc-900 dark:text-zinc-100">
+                        {item.title}
+                      </h3>
+                      <p className="text-xs text-zinc-500 dark:text-zinc-400 line-clamp-2">
+                        {item.summary}
+                      </p>
                     </div>
-                    <p className="text-zinc-500 dark:text-zinc-400 text-xs">
-                      Memperlihatkan pembagian tugas: siapa saja mekanik yang aktif mengerjakan servis pada periode ini, berapa unit kendaraan yang sudah ditangani, dan total pendapatan jasa dari pengerjaan masing-masing mekanik.
-                    </p>
                   </div>
-                </div>
-
-                <div className="p-3.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/40 space-y-1.5">
-                  <div className="font-black text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5">
-                    <span>📋</span>
-                    <span>Logbook Riwayat Servis Kendaraan</span>
+                  <div
+                    className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 transition-transform ${
+                      isExpanded
+                        ? 'rotate-90 bg-red-600 text-white font-black'
+                        : 'text-zinc-400 bg-zinc-100 dark:bg-zinc-800'
+                    }`}
+                  >
+                    <ChevronRight className="w-4 h-4" />
                   </div>
-                  <p className="text-zinc-500 dark:text-zinc-400 text-xs leading-relaxed">
-                    Tabel riwayat seluruh kendaraan yang pernah diservis. Kasir dapat memfilter berdasarkan nama mekanik tertentu, atau mencari berdasarkan plat nomor, tipe kendaraan, dan nomor nota. Dilengkapi tombol cepat <strong>"Cetak Nota Servis"</strong> dan <strong>"Kirim WA Nota Servis"</strong>.
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
+                </button>
 
-        {/* ============================================================ */}
-        {/* SECTION 3: KASIR SPAREPART & STOK OLI DROPDOWN */}
-        {/* ============================================================ */}
-        {(activeCategory === 'all' || activeCategory === 'sparepart') && (
-          <div
-            className={`rounded-2xl border transition-all ${
-              darkMode ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200'
-            } shadow-sm overflow-hidden`}
-          >
-            <button
-              type="button"
-              onClick={() => toggleSection('sparepart-guide')}
-              className="w-full p-5 sm:p-6 flex items-center justify-between text-left cursor-pointer hover:bg-zinc-50/50 dark:hover:bg-zinc-800/30"
-            >
-              <div className="flex items-center gap-3.5">
-                <div className="w-10 h-10 rounded-xl bg-emerald-500/15 text-emerald-500 flex items-center justify-center font-black">
-                  <Package className="w-5 h-5" />
-                </div>
-                <div>
-                  <h2 className="text-base sm:text-lg font-black text-zinc-900 dark:text-zinc-100">
-                    Bab 3: Kasir Sparepart Eceran &amp; Menu Drop Down Stok Suku Cadang
-                  </h2>
-                  <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                    Penjualan langsung suku cadang, menu dropdown kategori tanpa scroll samping &amp; manajemen stok
-                  </p>
-                </div>
-              </div>
-              <div
-                className={`w-7 h-7 rounded-lg flex items-center justify-center transition-transform ${
-                  expandedSection === 'sparepart-guide'
-                    ? 'rotate-90 bg-amber-500 text-zinc-950 font-black'
-                    : 'text-zinc-400'
-                }`}
-              >
-                <ChevronRight className="w-4 h-4" />
-              </div>
-            </button>
-
-            {expandedSection === 'sparepart-guide' && (
-              <div className="p-5 sm:p-6 pt-0 border-t border-zinc-100 dark:border-zinc-800 space-y-4">
-                <div className="p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/40 space-y-2">
-                  <h3 className="font-bold text-sm text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-                    <span className="p-1 rounded-md bg-emerald-500 text-zinc-950 font-black">🔩</span>
-                    <span>Kasir Sparepart Langsung (Tanpa Gangguan Header Servis)</span>
-                  </h3>
-                  <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed">
-                    Khusus untuk pelanggan yang hanya membeli oli, busi, aki, kampas rem, atau ban untuk dibawa pulang tanpa pengerjaan servis mekanik.
-                  </p>
-                  <ul className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 space-y-1 list-disc list-inside">
-                    <li><strong>Pencarian Cepat [F2]:</strong> Ketik nama sparepart (contoh: <em>MPX2, kampas beat, ban 90/90, aki kering</em>) atau scan barcode kemasan [F4].</li>
-                    <li><strong>Keranjang Belanja POS:</strong> Di sisi kanan (pada tablet &amp; laptop), menampilkan daftar barang belanjaan, jumlah barang, subtotal, potongan diskon, dan tombol bayar.</li>
-                    <li><strong>Fitur Antrian (Hold Cart) [F8]:</strong> Jika pembeli ingin mengambil barang tambahan di rak, klik <em>Antrian</em> agar kasir dapat melayani pembeli lain terlebih dahulu tanpa kehilangan transaksi sebelumnya.</li>
-                    <li><strong>Jual Kilat 1x (Quick Sell):</strong> Tombol petir hijau untuk transaksi cepat 1 barang tunai langsung lunas.</li>
-                  </ul>
-                </div>
-
-                <div className="p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/40 space-y-2">
-                  <h3 className="font-bold text-sm text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-                    <span className="p-1 rounded-md bg-amber-500 text-zinc-950 font-black">🏷️</span>
-                    <span>Menu Drop Down Kategori Stok Sparepart &amp; Oli (Tanpa Perlu Scroll Samping)</span>
-                  </h3>
-                  <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed">
-                    Sesuai kebutuhan pemilik toko, navigasi stok suku cadang kini menggunakan <strong>Menu Drop Down Vertikal</strong> yang nyaman diakses di layar tablet, HP, maupun laptop:
-                  </p>
-                  <ul className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 space-y-1 list-disc list-inside">
-                    <li><strong>Drop Down Kategori Lengkap:</strong> Pilihan rapi mencakup 🛢️ Oli &amp; Pelumas, 🛑 Rem &amp; Suspensi, 🔋 Kelistrikan &amp; Aki, 🛞 Ban &amp; Velg, ⚙️ Mesin &amp; Piston, 🔄 Transmisi &amp; CVT, 💡 Lampu &amp; Aksesoris, 🧰 Baut &amp; Pelengkap, dll.</li>
-                    <li><strong>Drop Down Kondisi Stok:</strong> Filter instan untuk memantau <em>"⚠️ Stok Kritis / Menipis"</em> (di bawah batas minimum) dan <em>"🚫 Stok Habis / Kosong"</em> (0 item).</li>
-                    <li><strong>Tombol Reset Filter:</strong> Tombol satu klik untuk mengembalikan tampilan ke seluruh katalog barang toko.</li>
-                    <li><strong>Ekspor Laporan:</strong> Tombol unduh laporan inventaris stok ke format <strong>Excel (.xlsx)</strong> dan <strong>PDF</strong>.</li>
-                  </ul>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* ============================================================ */}
-        {/* SECTION 4: DATA & KOMISI MEKANIK */}
-        {/* ============================================================ */}
-        {(activeCategory === 'all' || activeCategory === 'mechanic') && (
-          <div
-            className={`rounded-2xl border transition-all ${
-              darkMode ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200'
-            } shadow-sm overflow-hidden`}
-          >
-            <button
-              type="button"
-              onClick={() => toggleSection('mechanic-guide')}
-              className="w-full p-5 sm:p-6 flex items-center justify-between text-left cursor-pointer hover:bg-zinc-50/50 dark:hover:bg-zinc-800/30"
-            >
-              <div className="flex items-center gap-3.5">
-                <div className="w-10 h-10 rounded-xl bg-purple-500/15 text-purple-500 flex items-center justify-center font-black">
-                  <Users className="w-5 h-5" />
-                </div>
-                <div>
-                  <h2 className="text-base sm:text-lg font-black text-zinc-900 dark:text-zinc-100">
-                    Bab 4: Manajemen Tim Mekanik (Tambah, Edit, Hapus &amp; Hitung Komisi)
-                  </h2>
-                  <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                    Pengelolaan karyawan bengkel, penyesuaian tim jika ada yang keluar/masuk &amp; bagi hasil jasa servis
-                  </p>
-                </div>
-              </div>
-              <div
-                className={`w-7 h-7 rounded-lg flex items-center justify-center transition-transform ${
-                  expandedSection === 'mechanic-guide'
-                    ? 'rotate-90 bg-amber-500 text-zinc-950 font-black'
-                    : 'text-zinc-400'
-                }`}
-              >
-                <ChevronRight className="w-4 h-4" />
-              </div>
-            </button>
-
-            {expandedSection === 'mechanic-guide' && (
-              <div className="p-5 sm:p-6 pt-0 border-t border-zinc-100 dark:border-zinc-800 space-y-4">
-                <div className="p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/40 space-y-2">
-                  <h3 className="font-bold text-sm text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-                    <span className="p-1 rounded-md bg-purple-500 text-white font-black">👨‍🔧</span>
-                    <span>Tombol Tambah, Edit, dan Hapus Mekanik</span>
-                  </h3>
-                  <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed">
-                    Sesuai instruksi pemilik bengkel, kini telah disediakan fitur lengkap untuk mengelola staf mekanik:
-                  </p>
-                  <ul className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 space-y-1.5 list-disc list-inside">
-                    <li><strong>Tombol + Tambah Mekanik Baru:</strong> Masukkan nama mekanik baru saat ada karyawan baru yang mulai bekerja di bengkel. Mekanik langsung muncul di pilihan kasir servis.</li>
-                    <li><strong>Tombol Edit Mekanik:</strong> Mengubah nama atau memperbaiki ejaan nama mekanik. Semua riwayat pengerjaan servis sebelumnya otomatis diperbarui ke nama yang baru.</li>
-                    <li><strong>Tombol Hapus Mekanik:</strong> Menghapus mekanik dari daftar aktif jika ada mekanik yang berhenti atau mengundurkan diri, sehingga kasir tidak keliru menugaskan pekerjaan kepada mekanik yang sudah tidak bekerja.</li>
-                  </ul>
-                </div>
-
-                <div className="p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/40 space-y-2">
-                  <h3 className="font-bold text-sm text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-                    <span className="p-1 rounded-md bg-amber-500 text-zinc-950 font-black">%</span>
-                    <span>Sistem Bagi Hasil &amp; Perhitungan Komisi Jasa</span>
-                  </h3>
-                  <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed">
-                    Bengkel menggunakan sistem persentase bagi hasil dari <strong>Nilai Jasa Servis</strong> yang dikerjakan mekanik:
-                  </p>
-                  <ul className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 space-y-1 list-disc list-inside">
-                    <li><strong>Slider Persentase Global:</strong> Mengatur persentase standar bengkel (contoh: 50% untuk mekanik, 50% untuk bengkel).</li>
-                    <li><strong>Pengaturan Kustom per Mekanik:</strong> Jika ada mekanik senior atau mekanik magang dengan kesepakatan komisi berbeda (misal 60% atau 40%), persentase dapat disetel per individu.</li>
-                    <li><strong>Kirim Rekap Komisi ke WhatsApp:</strong> Satu klik tombol WA untuk mengirimkan rincian nota servis, nomor plat kendaraan yang dikerjakan, dan total uang komisi langsung ke nomor mekanik.</li>
-                    <li><strong>Ekspor Slip Upah Mekanik:</strong> Simpan laporan rekap ke format PDF atau Excel sebagai bukti pembayaran upah mingguan/bulanan.</li>
-                  </ul>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* ============================================================ */}
-        {/* SECTION 5: PRINTER THERMAL & NOTA WHATSAPP */}
-        {/* ============================================================ */}
-        {(activeCategory === 'all' || activeCategory === 'printer') && (
-          <div
-            className={`rounded-2xl border transition-all ${
-              darkMode ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200'
-            } shadow-sm overflow-hidden`}
-          >
-            <button
-              type="button"
-              onClick={() => toggleSection('printer-guide')}
-              className="w-full p-5 sm:p-6 flex items-center justify-between text-left cursor-pointer hover:bg-zinc-50/50 dark:hover:bg-zinc-800/30"
-            >
-              <div className="flex items-center gap-3.5">
-                <div className="w-10 h-10 rounded-xl bg-blue-500/15 text-blue-500 flex items-center justify-center font-black">
-                  <Printer className="w-5 h-5" />
-                </div>
-                <div>
-                  <h2 className="text-base sm:text-lg font-black text-zinc-900 dark:text-zinc-100">
-                    Bab 5: Pengaturan Printer Thermal 58mm/80mm &amp; Nota Digital WhatsApp
-                  </h2>
-                  <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                    Koneksi Bluetooth printer kasir, format struk bengkel &amp; kirim nota digital ke pelanggan
-                  </p>
-                </div>
-              </div>
-              <div
-                className={`w-7 h-7 rounded-lg flex items-center justify-center transition-transform ${
-                  expandedSection === 'printer-guide'
-                    ? 'rotate-90 bg-amber-500 text-zinc-950 font-black'
-                    : 'text-zinc-400'
-                }`}
-              >
-                <ChevronRight className="w-4 h-4" />
-              </div>
-            </button>
-
-            {expandedSection === 'printer-guide' && (
-              <div className="p-5 sm:p-6 pt-0 border-t border-zinc-100 dark:border-zinc-800 space-y-4">
-                <div className="p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/40 space-y-2">
-                  <h3 className="font-bold text-sm text-zinc-900 dark:text-zinc-100">
-                    Koneksi Printer Thermal Kasir Bengkel:
-                  </h3>
-                  <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed">
-                    1. Nyalakan printer thermal kasir Anda (ukuran 58mm atau 80mm).
-                    <br />2. Buka menu <strong>"Pengaturan Toko &gt; Printer Thermal"</strong>.
-                    <br />3. Pilih ukuran kertas struk Anda: <strong>58mm</strong> (printer portable Bluetooth kecil) atau <strong>80mm</strong> (printer kasir meja besar).
-                    <br />4. Klik tombol <strong>"Sambungkan Printer Bluetooth"</strong>, pilih nama printer kasir Anda dari daftar perangkat.
-                    <br />5. Aktifkan fitur <strong>"Auto Print Struk"</strong> jika Anda ingin struk otomatis keluar seketika setelah kasir menekan tombol selesai transaksi.
-                  </p>
-                </div>
-
-                <div className="p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/40 space-y-2">
-                  <h3 className="font-bold text-sm text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-                    <Share2 className="w-4 h-4 text-emerald-500" />
-                    <span>Kirim Nota Servis Resmi via WhatsApp Pelanggan</span>
-                  </h3>
-                  <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed">
-                    Pelanggan bengkel sangat menyukai nota digital yang tersimpan di HP mereka. Pada setiap nota servis, klik tombol <strong>"Kirim WA Nota Servis"</strong>:
-                  </p>
-                  <div className="p-3 rounded-lg bg-zinc-100 dark:bg-zinc-900 font-mono text-[11px] text-zinc-700 dark:text-zinc-300 space-y-1">
-                    <div>*NOTA SERVIS KENDARAAN - BENGKEL JAYA MOTOR*</div>
-                    <div>No. Nota: #SRV-1029</div>
-                    <div>Plat Nomor : B 1234 ABC | Vario 150 (24.500 KM)</div>
-                    <div>Mekanik : Agus Santoso</div>
-                    <div>*JASA SERVIS:* • Servis CVT (Rp40.000) • Ganti Oli (Rp10.000)</div>
-                    <div>*SPAREPART DIGANTI:* • Oli AHM MPX2 (Rp55.000) • Roller CVT (Rp45.000)</div>
-                    <div>*TOTAL BIAYA: Rp150.000 (LUNAS)*</div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* ============================================================ */}
-        {/* SECTION 6: DAFTAR TOMBOL PENTING & SHORTCUT KEYBOARD */}
-        {/* ============================================================ */}
-        {(activeCategory === 'all' || activeCategory === 'shortcuts') && (
-          <div
-            className={`rounded-2xl border transition-all ${
-              darkMode ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200'
-            } shadow-sm overflow-hidden`}
-          >
-            <button
-              type="button"
-              onClick={() => toggleSection('shortcuts-guide')}
-              className="w-full p-5 sm:p-6 flex items-center justify-between text-left cursor-pointer hover:bg-zinc-50/50 dark:hover:bg-zinc-800/30"
-            >
-              <div className="flex items-center gap-3.5">
-                <div className="w-10 h-10 rounded-xl bg-amber-500/15 text-amber-500 flex items-center justify-center font-black">
-                  <Keyboard className="w-5 h-5" />
-                </div>
-                <div>
-                  <h2 className="text-base sm:text-lg font-black text-zinc-900 dark:text-zinc-100">
-                    Bab 6: Daftar Shortcut Keyboard &amp; Tombol Pintas Kasir
-                  </h2>
-                  <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                    Pintasan tombol keyboard cepat (F1 - F9, ESC) untuk melayani pembeli di jam sibuk
-                  </p>
-                </div>
-              </div>
-              <div
-                className={`w-7 h-7 rounded-lg flex items-center justify-center transition-transform ${
-                  expandedSection === 'shortcuts-guide'
-                    ? 'rotate-90 bg-amber-500 text-zinc-950 font-black'
-                    : 'text-zinc-400'
-                }`}
-              >
-                <ChevronRight className="w-4 h-4" />
-              </div>
-            </button>
-
-            {expandedSection === 'shortcuts-guide' && (
-              <div className="p-5 sm:p-6 pt-0 border-t border-zinc-100 dark:border-zinc-800 space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
-                  <div className="p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/40 space-y-1">
-                    <div className="font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5">
-                      <span className="px-2 py-0.5 rounded bg-amber-500 text-zinc-950 font-mono text-[11px] font-black">F3</span>
-                      <span>+ Servis Kendaraan Baru</span>
+                {isExpanded && (
+                  <div className="p-5 pt-2 border-t border-zinc-100 dark:border-zinc-800 space-y-4">
+                    {/* Fungsi Utama */}
+                    <div className="p-3.5 rounded-xl bg-blue-50/60 dark:bg-blue-950/20 border border-blue-200/70 dark:border-blue-900/40 text-xs sm:text-sm text-zinc-700 dark:text-zinc-300">
+                      <span className="font-black text-blue-700 dark:text-blue-400">🎯 Fungsi Utama Menu Ini: </span>
+                      <span>{item.purpose}</span>
                     </div>
-                    <p className="text-zinc-500 dark:text-zinc-400">
-                      Langsung membuka formulir intake servis kendaraan (plat nomor, keluhan, mekanik, jasa &amp; sparepart).
-                    </p>
-                  </div>
 
-                  <div className="p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/40 space-y-1">
-                    <div className="font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5">
-                      <span className="px-2 py-0.5 rounded bg-zinc-900 text-white dark:bg-zinc-800 font-mono text-[11px] font-black">F2</span>
-                      <span>Fokus Pencarian Barang</span>
+                    {/* Langkah-langkah Penggunaan */}
+                    <div className="space-y-2">
+                      <h4 className="text-xs sm:text-sm font-black uppercase tracking-wider text-zinc-800 dark:text-zinc-200">
+                        📋 Langkah-Langkah Cara Penggunaan:
+                      </h4>
+                      <div className="space-y-2 bg-zinc-50 dark:bg-zinc-950/50 p-4 rounded-xl border border-zinc-200 dark:border-zinc-800">
+                        {item.steps.map((step, idx) => (
+                          <div key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed">
+                            <span className="w-5 h-5 rounded-full bg-red-600 text-white font-mono text-[11px] font-black flex items-center justify-center shrink-0 mt-0.5">
+                              {idx + 1}
+                            </span>
+                            <span>{step}</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                    <p className="text-zinc-500 dark:text-zinc-400">
-                      Mengarahkan kursor seketika ke kolom pencarian nama sparepart atau scan barcode.
-                    </p>
-                  </div>
 
-                  <div className="p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/40 space-y-1">
-                    <div className="font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5">
-                      <span className="px-2 py-0.5 rounded bg-emerald-500 text-zinc-950 font-mono text-[11px] font-black">F4</span>
-                      <span>Scan Barcode Kamera</span>
+                    {/* Fitur Unggulan di Dalam Menu Ini */}
+                    <div className="space-y-2">
+                      <h4 className="text-xs sm:text-sm font-black uppercase tracking-wider text-zinc-800 dark:text-zinc-200">
+                        ✨ Fitur Penting di Menu Ini:
+                      </h4>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
+                        {item.features.map((feat, fIdx) => (
+                          <div
+                            key={fIdx}
+                            className="p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 space-y-1"
+                          >
+                            <div className="font-bold text-xs text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5">
+                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                              <span>{feat.label}</span>
+                            </div>
+                            <p className="text-[11px] text-zinc-500 dark:text-zinc-400 leading-relaxed">
+                              {feat.desc}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                    <p className="text-zinc-500 dark:text-zinc-400">
-                      Membuka scanner kamera HP/tablet untuk scan barcode pada dus sparepart atau botol oli.
-                    </p>
-                  </div>
 
-                  <div className="p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/40 space-y-1">
-                    <div className="font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5">
-                      <span className="px-2 py-0.5 rounded bg-amber-500 text-zinc-950 font-mono text-[11px] font-black">F1 / F9</span>
-                      <span>Bayar / Checkout Kasir</span>
-                    </div>
-                    <p className="text-zinc-500 dark:text-zinc-400">
-                      Membuka jendela pembayaran di kasir sparepart (pilih tunai, QRIS, transfer, atau tempo).
-                    </p>
+                    {/* Direct Action Button */}
+                    {item.tabKey !== 'guide' && (
+                      <div className="pt-1 flex justify-end">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (item.isSettingsModal) {
+                              onOpenSettings();
+                            } else {
+                              onNavigateTab(item.tabKey);
+                            }
+                          }}
+                          className="px-4 py-2 rounded-xl bg-blue-700 hover:bg-blue-600 text-white font-black text-xs flex items-center gap-2 shadow-sm cursor-pointer active:scale-95 transition-all"
+                        >
+                          <span>{item.actionLabel}</span>
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    )}
                   </div>
-
-                  <div className="p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/40 space-y-1">
-                    <div className="font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5">
-                      <span className="px-2 py-0.5 rounded bg-blue-500 text-white font-mono text-[11px] font-black">F8</span>
-                      <span>Tahan Keranjang (Hold)</span>
-                    </div>
-                    <p className="text-zinc-500 dark:text-zinc-400">
-                      Menyimpan antrian belanjaan sementara saat pembeli izin mengambil barang lain.
-                    </p>
-                  </div>
-
-                  <div className="p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/40 space-y-1">
-                    <div className="font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5">
-                      <span className="px-2 py-0.5 rounded bg-rose-500 text-white font-mono text-[11px] font-black">ESC</span>
-                      <span>Tutup / Batal</span>
-                    </div>
-                    <p className="text-zinc-500 dark:text-zinc-400">
-                      Menutup dialog modal yang sedang terbuka tanpa menyimpan perubahan.
-                    </p>
-                  </div>
-                </div>
+                )}
               </div>
-            )}
-          </div>
-        )}
-
-        {/* ============================================================ */}
-        {/* SECTION 7: SOLUSI MASALAH & FAQ BENGKEL */}
-        {/* ============================================================ */}
-        {(activeCategory === 'all' || activeCategory === 'faq') && (
-          <div
-            className={`rounded-2xl border transition-all ${
-              darkMode ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200'
-            } shadow-sm overflow-hidden`}
-          >
-            <button
-              type="button"
-              onClick={() => toggleSection('faq-guide')}
-              className="w-full p-5 sm:p-6 flex items-center justify-between text-left cursor-pointer hover:bg-zinc-50/50 dark:hover:bg-zinc-800/30"
-            >
-              <div className="flex items-center gap-3.5">
-                <div className="w-10 h-10 rounded-xl bg-rose-500/15 text-rose-500 flex items-center justify-center font-black">
-                  <HelpCircle className="w-5 h-5" />
-                </div>
-                <div>
-                  <h2 className="text-base sm:text-lg font-black text-zinc-900 dark:text-zinc-100">
-                    Bab 7: Pertanyaan Sering Ditanyakan (FAQ &amp; Solusi Masalah)
-                  </h2>
-                  <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                    Jawaban cepat untuk pertanyaan teknis &amp; operasional bengkel sehari-hari
-                  </p>
-                </div>
-              </div>
-              <div
-                className={`w-7 h-7 rounded-lg flex items-center justify-center transition-transform ${
-                  expandedSection === 'faq-guide'
-                    ? 'rotate-90 bg-amber-500 text-zinc-950 font-black'
-                    : 'text-zinc-400'
-                }`}
-              >
-                <ChevronRight className="w-4 h-4" />
-              </div>
-            </button>
-
-            {expandedSection === 'faq-guide' && (
-              <div className="p-5 sm:p-6 pt-0 border-t border-zinc-100 dark:border-zinc-800 space-y-3 text-xs sm:text-sm">
-                <div className="p-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-950/50 border border-zinc-200 dark:border-zinc-800 space-y-1">
-                  <h4 className="font-bold text-zinc-900 dark:text-zinc-100">
-                    Q: Jika ada mekanik yang berhenti atau ada mekanik baru masuk, bagaimana caranya?
-                  </h4>
-                  <p className="text-zinc-600 dark:text-zinc-300 text-xs leading-relaxed">
-                    <strong>Jawab:</strong> Masuk ke menu <strong>"Data Mekanik"</strong>. Di bagian atas terdapat tombol <strong>"+ Tambah Mekanik"</strong> untuk mendaftarkan nama mekanik baru. Jika ada mekanik yang berhenti, cari nama mekanik tersebut lalu klik tombol ikon tempat sampah merah <strong>"Hapus Mekanik"</strong>. Jika hanya ingin memperbaiki nama, klik tombol pensil kuning <strong>"Edit Mekanik"</strong>.
-                  </p>
-                </div>
-
-                <div className="p-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-950/50 border border-zinc-200 dark:border-zinc-800 space-y-1">
-                  <h4 className="font-bold text-zinc-900 dark:text-zinc-100">
-                    Q: Mengapa jasa servis modalnya Rp 0 dan tidak memotong stok?
-                  </h4>
-                  <p className="text-zinc-600 dark:text-zinc-300 text-xs leading-relaxed">
-                    <strong>Jawab:</strong> Jasa servis (seperti tune up, ganti oli, servis CVT, bongkar mesin) adalah bentuk layanan keahlian tenaga kerja, bukan barang fisik. Oleh karena itu, jasa servis tidak memiliki stok dan modal belinya Rp 0 (100% margin keuntungan). Yang memotong stok dan memiliki modal HPP hanyalah suku cadang fisik yang dipasang ke kendaraan.
-                  </p>
-                </div>
-
-                <div className="p-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-950/50 border border-zinc-200 dark:border-zinc-800 space-y-1">
-                  <h4 className="font-bold text-zinc-900 dark:text-zinc-100">
-                    Q: Pelanggan langganan servis motornya tapi bayar tempo / kasbon minggu depan, bagaimana catatnya?
-                  </h4>
-                  <p className="text-zinc-600 dark:text-zinc-300 text-xs leading-relaxed">
-                    <strong>Jawab:</strong> Pada formulir servis kendaraan, pada pilihan metode pembayaran, pilih <strong>"TEMPO / KASBON"</strong>. Masukkan nominal uang muka (DP) jika pelanggan membayar sebagian, atau biarkan 0 jika belum bayar sama sekali. Sisa hutang otomatis tercatat rapi di menu <strong>"Buku Kasbon"</strong> atas nama pelanggan tersebut dan dapat dikirimi nota tagihan sopan via WhatsApp.
-                  </p>
-                </div>
-
-                <div className="p-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-950/50 border border-zinc-200 dark:border-zinc-800 space-y-1">
-                  <h4 className="font-bold text-zinc-900 dark:text-zinc-100">
-                    Q: Bagaimana jika internet bengkel mati atau mati lampu?
-                  </h4>
-                  <p className="text-zinc-600 dark:text-zinc-300 text-xs leading-relaxed">
-                    <strong>Jawab:</strong> Aplikasi kasir bengkel ini beroperasi dengan teknologi <em>Offline First</em>. Seluruh pencatatan transaksi, stok suku cadang, dan data mekanik tetap dapat berjalan normal 100% di perangkat tanpa internet. Begitu koneksi internet menyala kembali, data otomatis tersinkronisasi ke cloud database.
-                  </p>
-                </div>
-
-                <div className="p-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-950/50 border border-zinc-200 dark:border-zinc-800 space-y-1">
-                  <h4 className="font-bold text-zinc-900 dark:text-zinc-100">
-                    Q: Kasir salah input atau transaksi keliru, bagaimana membatalkannya?
-                  </h4>
-                  <p className="text-zinc-600 dark:text-zinc-300 text-xs leading-relaxed">
-                    <strong>Jawab:</strong> Buka menu <strong>"Laporan &amp; Nota"</strong>, cari transaksi yang bersangkutan, lalu klik tombol merah <strong>"Batalkan Transaksi"</strong>. Uang pendapatan dikoreksi, dan stok sparepart yang tadinya terpakai otomatis dikembalikan ke rak gudang.
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-
-      {/* Footer Navigation Bar */}
-      <div
-        className={`p-6 rounded-2xl border text-center space-y-3 ${
-          darkMode ? 'bg-zinc-900/60 border-zinc-800' : 'bg-white border-zinc-200'
-        }`}
-      >
-        <p className="text-xs text-zinc-500 dark:text-zinc-400">
-          Sistem POS Bengkel Motor &amp; Mobil dirancang untuk kecepatan kasir bengkel, transparansi kerja mekanik, dan akurasi keuangan pemilik toko di Indonesia.
-        </p>
-        <div className="flex flex-wrap items-center justify-center gap-3 pt-1">
-          <button
-            type="button"
-            onClick={() => onNavigateTab('cashier-service')}
-            className="px-5 py-2.5 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-black text-xs rounded-xl shadow-xs active:scale-95 transition-all cursor-pointer flex items-center gap-2"
-          >
-            <Wrench className="w-4 h-4" />
-            <span>Buka Kasir Servis Kendaraan</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => onNavigateTab('cashier-sparepart')}
-            className="px-5 py-2.5 bg-zinc-900 text-amber-400 hover:bg-zinc-800 font-bold text-xs rounded-xl border border-zinc-700 shadow-xs active:scale-95 transition-all cursor-pointer flex items-center gap-2"
-          >
-            <Package className="w-4 h-4" />
-            <span>Buka Kasir Sparepart</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => window.print()}
-            className="px-4 py-2.5 border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-bold text-xs rounded-xl transition-all cursor-pointer flex items-center gap-2"
-          >
-            <Printer className="w-4 h-4" />
-            <span>Cetak / Simpan Buku Panduan ke PDF</span>
-          </button>
+            );
+          })}
         </div>
-      </div>
+      )}
+
+      {/* ============================================================ */}
+      {/* SOP HARIAN KASIR BENGKEL (PAGI, SIANG, SORE/MALAM)           */}
+      {/* ============================================================ */}
+      {(activeCategory === 'all' || activeCategory === 'workflow') && (
+        <div
+          className={`rounded-2xl border transition-all ${
+            darkMode ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200'
+          } shadow-sm overflow-hidden`}
+        >
+          <button
+            type="button"
+            onClick={() => toggleSection('daily-flow')}
+            className="w-full p-5 sm:p-6 flex items-center justify-between text-left cursor-pointer hover:bg-zinc-50/50 dark:hover:bg-zinc-800/30"
+          >
+            <div className="flex items-center gap-3.5">
+              <div className="w-10 h-10 rounded-xl bg-red-600/15 text-red-600 dark:text-red-400 flex items-center justify-center font-black">
+                <Clock className="w-5 h-5" />
+              </div>
+              <div>
+                <h2 className="text-base sm:text-lg font-black text-zinc-900 dark:text-zinc-100">
+                  SOP Alur Kerja Harian Kasir Bengkel (Pagi, Siang &amp; Tutup Bengkel)
+                </h2>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                  Urutan kerja standar mulai dari buka shift kasir pagi hari hingga tutup buku sore/malam hari
+                </p>
+              </div>
+            </div>
+            <div
+              className={`w-7 h-7 rounded-lg flex items-center justify-center transition-transform ${
+                expandedSection === 'daily-flow'
+                  ? 'rotate-90 bg-red-600 text-white font-black'
+                  : 'text-zinc-400'
+              }`}
+            >
+              <ChevronRight className="w-4 h-4" />
+            </div>
+          </button>
+
+          {expandedSection === 'daily-flow' && (
+            <div className="p-5 sm:p-6 pt-0 border-t border-zinc-100 dark:border-zinc-800 space-y-5">
+              {/* Step 1: Pagi */}
+              <div className="space-y-2 pt-3">
+                <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 font-extrabold text-sm">
+                  <span className="w-6 h-6 rounded-full bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xs font-mono font-black">
+                    1
+                  </span>
+                  <span>Pagi Hari: Buka Shift Kasir, Cek Modal Laci &amp; Absensi Mekanik</span>
+                </div>
+                <div className="ml-8 text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 space-y-1.5 leading-relaxed bg-zinc-50 dark:bg-zinc-950/50 p-4 rounded-xl border border-zinc-200 dark:border-zinc-800">
+                  <p>• Klik tombol <strong>"Mulai Shift"</strong> di bilah atas untuk membuka shift kasir hari ini dan masukkan <strong>Modal Kas Awal</strong> di laci.</p>
+                  <p>• Buka menu <strong>"Gudang &amp; Mekanik &gt; Komisi Mekanik"</strong> untuk memastikan daftar nama mekanik yang bertugas hari ini sudah terdaftar.</p>
+                  <p>• Buka menu <strong>"Gudang &amp; Mekanik &gt; Stok Sparepart &amp; Oli"</strong>, pilih filter <em>"Stok Menipis / Kritis"</em> untuk mengecek oli atau suku cadang yang perlu dipesan ke supplier.</p>
+                </div>
+              </div>
+
+              {/* Step 2: Siang */}
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-red-600 dark:text-red-400 font-extrabold text-sm">
+                  <span className="w-6 h-6 rounded-full bg-red-500/20 text-red-600 dark:text-red-400 flex items-center justify-center text-xs font-mono font-black">
+                    2
+                  </span>
+                  <span>Jam Operasional: Melayani Servis Kendaraan, Sparepart &amp; Kas Keluar</span>
+                </div>
+                <div className="ml-8 text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 space-y-2 leading-relaxed bg-zinc-50 dark:bg-zinc-950/50 p-4 rounded-xl border border-zinc-200 dark:border-zinc-800">
+                  <p>• <strong>Kendaraan Masuk Servis:</strong> Buka <strong>"Kasir &amp; Transaksi &gt; Kasir Servis"</strong>, klik <strong>"+ Servis Kendaraan Baru [F3]"</strong>, catat Plat Nomor, Mekanik, Jasa Servis &amp; Sparepart yang dipasang, lalu cetak struk nota servis.</p>
+                  <p>• <strong>Pembelian Sparepart Tanpa Servis:</strong> Buka <strong>"Kasir &amp; Transaksi &gt; Kasir Sparepart"</strong>, cari barang [F2] atau scan barcode [F4], masukkan ke keranjang, lalu klik <strong>Bayar [F1]</strong>.</p>
+                  <p>• <strong>Pengeluaran Harian Bengkel:</strong> Setiap kali mengeluarkan uang laci untuk beli bensin cuci part, makan mekanik, atau listrik, langsung catat di menu <strong>"Kas &amp; Piutang &gt; Kas Keluar / Biaya"</strong>.</p>
+                </div>
+              </div>
+
+              {/* Step 3: Sore/Malam */}
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-extrabold text-sm">
+                  <span className="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xs font-mono font-black">
+                    3
+                  </span>
+                  <span>Sore / Malam Hari: Bagi Komisi Mekanik, Rekonsiliasi Kas &amp; Tutup Shift</span>
+                </div>
+                <div className="ml-8 text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 space-y-1.5 leading-relaxed bg-zinc-50 dark:bg-zinc-950/50 p-4 rounded-xl border border-zinc-200 dark:border-zinc-800">
+                  <p>• Buka menu <strong>"Komisi Mekanik"</strong> untuk melihat rekap upah bagi hasil masing-masing mekanik hari ini dan kirim slipnya via WhatsApp.</p>
+                  <p>• Buka menu <strong>"Saldo Kas &amp; Bank"</strong> untuk mencocokkan uang tunai di laci dan saldo QRIS/Bank.</p>
+                  <p>• Klik tombol <strong>"Shift Aktif"</strong> di bilah atas lalu pilih <strong>"Tutup Shift Kasir"</strong>, masukkan jumlah uang fisik aktual di laci, dan cetak struk penutupan shift.</p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ============================================================ */}
+      {/* PRINTER THERMAL 58MM/80MM & NOTA WHATSAPP                    */}
+      {/* ============================================================ */}
+      {(activeCategory === 'all' || activeCategory === 'printer') && (
+        <div
+          className={`rounded-2xl border transition-all ${
+            darkMode ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200'
+          } shadow-sm overflow-hidden`}
+        >
+          <button
+            type="button"
+            onClick={() => toggleSection('printer-guide')}
+            className="w-full p-5 sm:p-6 flex items-center justify-between text-left cursor-pointer hover:bg-zinc-50/50 dark:hover:bg-zinc-800/30"
+          >
+            <div className="flex items-center gap-3.5">
+              <div className="w-10 h-10 rounded-xl bg-blue-500/15 text-blue-600 dark:text-blue-400 flex items-center justify-center font-black">
+                <Printer className="w-5 h-5" />
+              </div>
+              <div>
+                <h2 className="text-base sm:text-lg font-black text-zinc-900 dark:text-zinc-100">
+                  Panduan Koneksi Printer Thermal Bluetooth (58mm / 80mm) &amp; Nota WhatsApp
+                </h2>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                  Cara menyambungkan printer struk kasir tanpa kabel dan mengirim nota digital ke WhatsApp pelanggan
+                </p>
+              </div>
+            </div>
+            <div
+              className={`w-7 h-7 rounded-lg flex items-center justify-center transition-transform ${
+                expandedSection === 'printer-guide'
+                  ? 'rotate-90 bg-red-600 text-white font-black'
+                  : 'text-zinc-400'
+              }`}
+            >
+              <ChevronRight className="w-4 h-4" />
+            </div>
+          </button>
+
+          {expandedSection === 'printer-guide' && (
+            <div className="p-5 sm:p-6 pt-3 border-t border-zinc-100 dark:border-zinc-800 space-y-4">
+              <div className="p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/40 space-y-2">
+                <h3 className="font-bold text-sm text-zinc-900 dark:text-zinc-100">
+                  🖨️ Cara Menyambungkan Printer Thermal Bluetooth:
+                </h3>
+                <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed">
+                  1. Nyalakan printer thermal Bluetooth Anda dan pastikan kertas thermal sudah terpasang.
+                  <br />2. Buka menu <strong>"Laporan &amp; Sistem &gt; Pengaturan Bengkel"</strong>.
+                  <br />3. Pilih ukuran lebar kertas printer Anda: <strong>58mm</strong> (standar portable) atau <strong>80mm</strong> (lebar meja kasir).
+                  <br />4. Klik tombol <strong>"Hubungkan Printer Bluetooth"</strong>, lalu pilih nama perangkat printer (misal: RPP02N, MPT-II, Eppos, VSC) yang muncul di layar Chrome.
+                  <br />5. Aktifkan opsi <strong>"Cetak Struk Otomatis"</strong> bila ingin nota langsung tercetak setiap kali transaksi selesai.
+                </p>
+              </div>
+
+              <div className="p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/40 space-y-2">
+                <h3 className="font-bold text-sm text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+                  <Share2 className="w-4 h-4 text-emerald-500" />
+                  <span>📱 Kirim Nota Servis Resmi via WhatsApp Pelanggan</span>
+                </h3>
+                <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed">
+                  Jika kertas printer sedang habis atau pelanggan menginginkan bukti nota digital di HP mereka, klik tombol <strong>"Kirim Nota via WhatsApp"</strong> pada layar struk selesai transaksi. Sistem otomatis menyusun pesan berisi Nama Bengkel, Nomor Faktur, Plat Nomor, Nama Mekanik, rincian Jasa Servis &amp; Sparepart, serta Total Pembayaran.
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ============================================================ */}
+      {/* SHORTCUT KEYBOARD KASIR CEPAT (F1 - F9)                      */}
+      {/* ============================================================ */}
+      {(activeCategory === 'all' || activeCategory === 'shortcuts') && (
+        <div
+          className={`rounded-2xl border transition-all ${
+            darkMode ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200'
+          } shadow-sm overflow-hidden`}
+        >
+          <button
+            type="button"
+            onClick={() => toggleSection('shortcuts-guide')}
+            className="w-full p-5 sm:p-6 flex items-center justify-between text-left cursor-pointer hover:bg-zinc-50/50 dark:hover:bg-zinc-800/30"
+          >
+            <div className="flex items-center gap-3.5">
+              <div className="w-10 h-10 rounded-xl bg-amber-500/15 text-amber-500 flex items-center justify-center font-black">
+                <Keyboard className="w-5 h-5" />
+              </div>
+              <div>
+                <h2 className="text-base sm:text-lg font-black text-zinc-900 dark:text-zinc-100">
+                  Daftar Pintasan Keyboard Kasir Cepat (Shortcut F1 – F9)
+                </h2>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                  Mempercepat pelayanan kasir pada Laptop / PC tanpa harus selalu menggeser mouse
+                </p>
+              </div>
+            </div>
+            <div
+              className={`w-7 h-7 rounded-lg flex items-center justify-center transition-transform ${
+                expandedSection === 'shortcuts-guide'
+                  ? 'rotate-90 bg-red-600 text-white font-black'
+                  : 'text-zinc-400'
+              }`}
+            >
+              <ChevronRight className="w-4 h-4" />
+            </div>
+          </button>
+
+          {expandedSection === 'shortcuts-guide' && (
+            <div className="p-5 sm:p-6 pt-3 border-t border-zinc-100 dark:border-zinc-800">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
+                {[
+                  { key: 'F1', title: 'Proses Bayar Checkout', desc: 'Membuka jendela pembayaran keranjang belanja sparepart.' },
+                  { key: 'F2', title: 'Fokus Cari Sparepart', desc: 'Langsung mengarahkan kursor ke kotak pencarian produk.' },
+                  { key: 'F3', title: '+ Servis Kendaraan Baru', desc: 'Membuka formulir input servis kendaraan (Plat & Mekanik).' },
+                  { key: 'F4', title: 'Buka Kamera Scanner', desc: 'Mengaktifkan pemindai barcode kamera/scanner USB.' },
+                  { key: 'F8', title: 'Tahan Keranjang (Antrian)', desc: 'Menyimpan keranjang belanja pelanggan sementara ke antrian.' },
+                  { key: 'F9', title: 'Kalkulator Bengkel', desc: 'Membuka kalkulator hitung cepat di layar kasir.' },
+                ].map((sc) => (
+                  <div
+                    key={sc.key}
+                    className="p-3.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/40 flex items-start gap-3"
+                  >
+                    <span className="px-2.5 py-1 rounded-lg bg-red-600 text-white font-mono font-black text-xs shrink-0 shadow-xs">
+                      {sc.key}
+                    </span>
+                    <div>
+                      <div className="font-black text-zinc-900 dark:text-zinc-100">{sc.title}</div>
+                      <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">{sc.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ============================================================ */}
+      {/* FAQ / TANYA JAWAB KENDALA UMUM BENGKEL                       */}
+      {/* ============================================================ */}
+      {(activeCategory === 'all' || activeCategory === 'faq') && (
+        <div
+          className={`rounded-2xl border transition-all ${
+            darkMode ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200'
+          } shadow-sm overflow-hidden`}
+        >
+          <button
+            type="button"
+            onClick={() => toggleSection('faq-guide')}
+            className="w-full p-5 sm:p-6 flex items-center justify-between text-left cursor-pointer hover:bg-zinc-50/50 dark:hover:bg-zinc-800/30"
+          >
+            <div className="flex items-center gap-3.5">
+              <div className="w-10 h-10 rounded-xl bg-purple-500/15 text-purple-600 dark:text-purple-400 flex items-center justify-center font-black">
+                <HelpCircle className="w-5 h-5" />
+              </div>
+              <div>
+                <h2 className="text-base sm:text-lg font-black text-zinc-900 dark:text-zinc-100">
+                  Tanya Jawab &amp; Solusi Masalah Umum (FAQ Bengkel)
+                </h2>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                  Jawaban cepat untuk pertanyaan yang sering ditanyakan kasir &amp; pemilik bengkel
+                </p>
+              </div>
+            </div>
+            <div
+              className={`w-7 h-7 rounded-lg flex items-center justify-center transition-transform ${
+                expandedSection === 'faq-guide'
+                  ? 'rotate-90 bg-red-600 text-white font-black'
+                  : 'text-zinc-400'
+              }`}
+            >
+              <ChevronRight className="w-4 h-4" />
+            </div>
+          </button>
+
+          {expandedSection === 'faq-guide' && (
+            <div className="p-5 sm:p-6 pt-3 border-t border-zinc-100 dark:border-zinc-800 space-y-3 text-xs sm:text-sm">
+              <div className="p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/40 space-y-1">
+                <div className="font-black text-zinc-900 dark:text-zinc-100">
+                  1. Bagaimana cara berpindah menu dengan cepat setelah navigasi diubah menjadi Dropdown?
+                </div>
+                <p className="text-zinc-600 dark:text-zinc-300 leading-relaxed">
+                  Anda dapat mengklik salah satu dari 4 grup dropdown di bilah samping kiri (<em>Kasir &amp; Transaksi, Gudang &amp; Mekanik, Kas &amp; Piutang, Laporan &amp; Sistem</em>), atau menggunakan <strong>Dropdown Pilih Cepat Menu</strong> yang selalu tersedia di bilah header atas layar.
+                </p>
+              </div>
+
+              <div className="p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/40 space-y-1">
+                <div className="font-black text-zinc-900 dark:text-zinc-100">
+                  2. Bagaimana jika kasir salah input item setelah struk servis dicetak?
+                </div>
+                <p className="text-zinc-600 dark:text-zinc-300 leading-relaxed">
+                  Buka menu <strong>Laporan &amp; Sistem &gt; Laporan Penjualan</strong>, cari nomor faktur transaksi tersebut, lalu klik tombol ikon <strong>Batalkan / Retur</strong> berwarna merah. Stok sparepart yang terpakai akan otomatis kembali ke gudang, lalu kasir dapat menginput ulang nota yang benar.
+                </p>
+              </div>
+
+              <div className="p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/40 space-y-1">
+                <div className="font-black text-zinc-900 dark:text-zinc-100">
+                  3. Apakah aplikasi tetap bisa dipakai mencatat servis jika WiFi / Internet bengkel mati?
+                </div>
+                <p className="text-zinc-600 dark:text-zinc-300 leading-relaxed">
+                  <strong>Sangat bisa!</strong> BENGKEL-Q dilengkapi penyimpan database lokal terenkripsi dan teknologi PWA Offline-First. Seluruh pencatatan servis, stok oli, dan cetak struk Bluetooth tetap berjalan 100% normal tanpa internet, dan akan otomatis tersinkronisasi ke Cloud Firebase saat internet menyala kembali.
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

@@ -194,7 +194,7 @@ export const CashierView: React.FC<CashierViewProps> = ({
   const [isQuickRegisterOpen, setIsQuickRegisterOpen] = useState(false);
   const [quickRegisterBarcode, setQuickRegisterBarcode] = useState('');
   const [quickName, setQuickName] = useState('');
-  const [quickCategory, setQuickCategory] = useState<ProductCategory>('Pulsa & Paket Data');
+  const [quickCategory, setQuickCategory] = useState<ProductCategory>('Oli & Pelumas');
   const [quickBuyPrice, setQuickBuyPrice] = useState<number>(0);
   const [quickSellPrice, setQuickSellPrice] = useState<number>(0);
   const [quickStock, setQuickStock] = useState<number>(20);
@@ -321,12 +321,12 @@ export const CashierView: React.FC<CashierViewProps> = ({
     const trx: Transaction = {
       id: `trx-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
       invoiceNumber,
-      referenceNumber: `KONTER-${Date.now().toString().slice(-6)}`,
+      referenceNumber: `BKL-${Date.now().toString().slice(-6)}`,
       date: now.toISOString(),
       cashierId: currentUser?.id || 'cashier-1',
-      cashierName: currentUser?.name || 'Kasir Konter',
+      cashierName: currentUser?.name || 'Kasir Bengkel',
       branchId: activeBranch?.id || 'branch-pusat',
-      branchName: activeBranch?.name || 'Konter Pusat',
+      branchName: activeBranch?.name || 'Bengkel Pusat',
       items: [
         {
           productId: product.id,
@@ -366,7 +366,7 @@ export const CashierView: React.FC<CashierViewProps> = ({
       {
         category: 'TRANSAKSI',
         description: `Penjualan Kilat: ${product.name}`,
-        cashierName: currentUser?.name || 'Kasir Konter',
+        cashierName: currentUser?.name || 'Kasir Bengkel',
         referenceId: invoiceNumber,
       }
     );

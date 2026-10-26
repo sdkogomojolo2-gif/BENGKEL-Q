@@ -299,7 +299,7 @@ export const AdjustRealBalancesModal: React.FC<AdjustRealBalancesModalProps> = (
                 <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-950 border border-cyan-500/30 space-y-2">
                   <div className="flex items-center justify-between">
                     <label className="text-xs font-black text-zinc-950 dark:text-zinc-200 flex items-center gap-1.5">
-                      <span>👛</span> E-Wallet (GoPay, ShopeePay, DANA)
+                      <span>👛</span> Saldo QRIS &amp; E-Wallet Bengkel
                     </label>
                     <span className="text-[10px] font-mono font-bold text-zinc-500">
                       Sebelum: {formatRupiah(branch.ewalletBalance || 0)}
@@ -318,15 +318,15 @@ export const AdjustRealBalancesModal: React.FC<AdjustRealBalancesModalProps> = (
                     />
                   </div>
                   <p className="text-[10px] text-zinc-600 dark:text-zinc-400 font-medium">
-                    Saldo di dompet digital untuk melayani transfer & top-up.
+                    Saldo penerimaan pembayaran QRIS &amp; dompet digital bengkel.
                   </p>
                 </div>
 
-                {/* 4. Saldo Server Pulsa & Kuota (Digipos) */}
+                {/* 4. Deposit Supplier & Modal Belanja Sparepart */}
                 <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-950 border border-purple-500/30 space-y-2">
                   <div className="flex items-center justify-between">
                     <label className="text-xs font-black text-zinc-950 dark:text-zinc-200 flex items-center gap-1.5">
-                      <span>📱</span> Saldo Server Pulsa & Kuota
+                      <span>📦</span> Deposit Supplier &amp; Kas Cadangan Part
                     </label>
                     <span className="text-[10px] font-mono font-bold text-zinc-500">
                       Sebelum: {formatRupiah(branch.digiposBalance || 0)}
@@ -345,7 +345,7 @@ export const AdjustRealBalancesModal: React.FC<AdjustRealBalancesModalProps> = (
                     />
                   </div>
                   <p className="text-[10px] text-zinc-600 dark:text-zinc-400 font-medium">
-                    Saldo chip server pulsa (Digipos / Mkios / Isi Ulang).
+                    Saldo deposit ke distributor oli/sparepart &amp; modal cadangan belanja suku cadang.
                   </p>
                 </div>
               </div>
